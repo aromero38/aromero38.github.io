@@ -5,7 +5,7 @@ import index from '@/styles/index.module.css'
 export default function Home() {
   return (
     <>
-      <Head>
+      <Head className={index.background}>
         <title>Tunefy</title>
         <meta name="description" content="Spotify Statistic Tracker" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
