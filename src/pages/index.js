@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import index from '@/styles/index.module.css'
+import Link from 'next/link'
 
 
 export default function Home() {
@@ -16,10 +17,16 @@ export default function Home() {
           <h1>LOGO | TUNEFY</h1>
           <div>
             <div>
-              <center style={{fontSize: 56}}>WELCOME TO TUNEFY</center>
+              <center style={{fontSize: 56}}>WELCOME TO TUNEFY
+              <div style={{fontSize:20}}>
+                View your Spotify stats and share them with anyone <br></br>
+                Get music recommendations, listen to music, and more
+              </div></center>
             </div>
             <div>
-              <center style={{fontSize: 24}}><button className={index.button}>LOGIN</button></center>
+                <Link href="/user-profile">
+                  <center style={{fontSize: 24}}><button className={index.button}>LOGIN</button></center>
+                </Link>
             </div>
             <div>
               <center><img src='https://media.tenor.com/7rfVkJl_3igAAAAC/visualizer-colorful.gif'></img></center>
