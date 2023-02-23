@@ -1,0 +1,19 @@
+.header{
+    font-size: 30px;
+    color: white;
+}
+
+.test{
+    background-color: #56E39F;
+}
+
+.userImage{
+    border-radius: 50%;
+    border: 5px solid black;
+    width: 150px;
+    height: auto;
+    position: relative;
+    bottom: 55px;
+    left: 25px;
+
+}

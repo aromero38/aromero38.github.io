@@ -1,4 +1,9 @@
-.background{
+.header{
+    font-size: 30px;
+    color: white;
+}
+
+.text{
     color: white;
 }
 

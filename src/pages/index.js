@@ -12,10 +12,10 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={index.background}>
+      <main>
         <div>
-          <h1>LOGO | TUNEFY</h1>
-          <div>
+          <h1 className={index.header}>LOGO | TUNEFY</h1>
+          <div className={index.text}>
             <div>
               <center style={{fontSize: 56}}>WELCOME TO TUNEFY
               <div style={{fontSize:20}}>
