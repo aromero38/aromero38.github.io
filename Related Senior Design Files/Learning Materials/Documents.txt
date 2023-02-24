@@ -12,3 +12,6 @@ https://www.npmjs.com/package/spotify-web-api-node?activeTab=readme
 
 Spotify Web Playback SDK
 https://developer.spotify.com/documentation/web-playback-sdk/quick-start/
+
+Next JS refresh token rotation
+http://next-auth.js.org/tutorials/refresh-token-rotation
