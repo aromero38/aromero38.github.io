@@ -1,11 +1,20 @@
 import Head from 'next/head'
 import index from '@/styles/index.module.css'
-import Link from 'next/link'
 import {getProviders, signIn} from "next-auth/react"
 import spotifyApi from 'lib/spotify'
+import {useSession} from 'next-auth/react'
+
+spotifyApi.getMe()
+  .then(function(data) {
+    console.log('Some information about the authenticated user', data.body);
+  }, function(err) {
+    console.log('Something went wrong!', err);
+  });
 
 
 export default function Home({providers}) {
+const {data: session} = useSession();
+
   return (
     <>
       <Head className={index.background}>
@@ -30,6 +39,9 @@ export default function Home({providers}) {
                   <center style={{fontSize: 24}}><button className={index.button} onClick={() => signIn(provider.id, {callbackUrl: "/"})}>Login with {provider.name}</button></center>
             </div>
             ))}
+            <div>
+              Hello, {session?.user.name}
+            </div>
             <div>
               <center><img src='https://media.tenor.com/7rfVkJl_3igAAAAC/visualizer-colorful.gif'></img></center>
             </div>
