@@ -3,17 +3,12 @@ import index from '@/styles/index.module.css'
 import {getProviders, signIn} from "next-auth/react"
 import spotifyApi from 'lib/spotify'
 import {useSession} from 'next-auth/react'
-
-spotifyApi.getMe()
-  .then(function(data) {
-    console.log('Some information about the authenticated user', data.body);
-  }, function(err) {
-    console.log('Something went wrong!', err);
-  });
+import Link from 'next/link'
 
 
 export default function Home({providers}) {
 const {data: session} = useSession();
+
 
   return (
     <>
@@ -34,15 +29,23 @@ const {data: session} = useSession();
                 Get music recommendations, listen to music, and more
               </div></center>
             </div>
+            {/* Login button that takes you to authentication */}
             {Object.values(providers).map((provider) =>(
             <div key={provider.name}>
                   <center style={{fontSize: 24}}><button className={index.button} onClick={() => signIn(provider.id, {callbackUrl: "/"})}>Login with {provider.name}</button></center>
             </div>
             ))}
             <div>
+              {/* Hello "User" */}
               Hello, {session?.user.name}
             </div>
             <div>
+              {/* temp link to user page */}
+            <Link href="/user-profile"><button>Go here</button></Link>
+            Current Song: {spotifyApi.getMyCurrentPlayingTrack}
+            </div>
+            <div>
+              {/* Temp Visualizer lol */}
               <center><img src='https://media.tenor.com/7rfVkJl_3igAAAAC/visualizer-colorful.gif'></img></center>
             </div>
           </div>
@@ -52,7 +55,7 @@ const {data: session} = useSession();
   )
 }
 
-
+//allows the api call to spotify on the server-side
 export async function getServerSideProps(){
     const providers = await getProviders();
 
