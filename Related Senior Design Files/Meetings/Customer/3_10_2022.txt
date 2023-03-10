@@ -1,0 +1,31 @@
+5:01pm 3/10/2022 - 5:20pm 3/10/2022
+
+Main Page comments:
+	Kwabs:
+		- Likes the circular visualizer rather than the one we have currently
+		
+User Profile comments:
+	Kwabs:
+		-Maybe add total play time(?)
+		-Looks like spotify wrapped, change layout? 
+		
+
+Search Functionality comments:
+	Kwabs:
+		- Didnt look clear that it was to play music
+		- Does like layout
+	Nico: 
+		-Useful to find specific artist
+
+Artist page comments:
+	Kwabs:
+		-Music leaderboard?
+	Nico: 
+		-Percentile of listeners (compare to others)
+
+Album page comments:
+	Kwabs:
+		-Likes the layout
+
+
+Hard to come up with more suggestions, need to get more done for them to add more comments
