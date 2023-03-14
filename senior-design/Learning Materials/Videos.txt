@@ -1,0 +1,8 @@
+Next.JS Beginner Tutorial Playlist:
+https://www.youtube.com/watch?v=A63UxsQsEbU&list=PL4cUxeGkcC9g9gP2onazU5-2M-AzA8eBw
+
+NextJS Beginners Course: 
+https://www.youtube.com/watch?v=tsmaQdgidKg
+
+Spotify Authentication:
+https://www.youtube.com/watch?v=J2Olfy6MoJ0
