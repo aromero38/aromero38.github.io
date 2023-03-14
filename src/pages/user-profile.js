@@ -1,4 +1,3 @@
- import userProfile from '@/styles/user-profile.module.css'
 import Head from 'next/head'
 import {getProviders, signIn} from "next-auth/react"
 import spotifyApi from 'lib/spotify'
@@ -15,33 +14,30 @@ export default function UserProfile({providers}) {
   return (
     <>
       <Head>
-        <title>USER | Tunefy</title>
+        <title>{session?.user.name} | Tunefy</title>
         <meta name="description" content="Spotify Statistic Tracker" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <div>
-          <h1 className={userProfile.header}>LOGO | TUNEFY</h1>
-          <div>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            {/* replace with padding */}
-          </div>
-          <div className={userProfile.test}>
-            <div>
-                <img className={userProfile.userImage} src="https://i.pinimg.com/236x/0a/87/04/0a8704e1cf2a194fe83cc6eee0220bf1.jpg"></img>
-                {session?.user.name}
-            </div>
-          </div>
-          {/*Music Player Template*/}
-          <div>
-           
-          </div>
-        </div>
-      </main>
+
+      {/* nav stuff */}
+      <h1 className='text-white p-5 pb-24 font-bold '>LOGO | TUNEFY</h1>
+
+      {/* heading stuff - username, image, etc.*/}
+      <div className='text-white pl-5 flex flex-row w-full place-items-center'>
+        <img className='h-48 w-48 mr-12 rounded-full' src={session?.user.image} />
+        <p className='text-2xl'>Hello, {session?.user.name}</p>
+      </div>
+
+      {/* actual content */}
+      <div>
+
+      </div>
+
+      {/* music player */}
+      <div>
+
+      </div>
     </>
   );
 }
@@ -49,7 +45,7 @@ export default function UserProfile({providers}) {
 export async function getServerSideProps(){
   const providers = await getProviders();
 
-  return{
+  return {
     props: {
       providers
     }
