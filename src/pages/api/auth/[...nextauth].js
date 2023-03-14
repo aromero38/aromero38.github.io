@@ -2,21 +2,22 @@ import NextAuth from 'next-auth';
 import SpotifyProvier from 'next-auth/providers/spotify';
 import spotifyApi, {LOGIN_URL} from "lib/spotify";
 
-async function refreshAccessToken(token){
-    try{
+async function refreshAccessToken(token) {
+    try {
         spotifyApi.setAccessToken(token.accessToken);
         spotifyApi.setRefreshToken(token.refreshToken);
 
-        const { body: refreshToken} = await spotifyApi.refreshAccessToken();
+        const { body: refreshToken } = await spotifyApi.refreshAccessToken();
+        console.log("REFRESHED TOKEN : ", refreshedToken);
 
-        return{
+        return {
             ...token,
             accessToken: refreshedToken.accessToken,
-            accessTokenExpires: Date.now + refreshToken.expires_in * 1000, // expires in 1 hours
-            refreshToken: refreshedToken.refreshToken ?? token.refreshToken, //if refresh token the use it, otherwise refresh
+            accessTokenExpires: Date.now + refreshToken.expires_in * 1000, // expires in 1 hour
+            refreshToken: refreshedToken.refreshToken ?? token.refreshToken, // if refresh token the use it, otherwise refresh
         };
-
-    } catch(error){
+    }
+    catch(error) {
         console.error(error)
         
         return {
@@ -28,22 +29,24 @@ async function refreshAccessToken(token){
 
 export default NextAuth({
     providers: [
-    SpotifyProvier({
-        clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
-        clientSecret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
-        authorization: LOGIN_URL
-    })
+        SpotifyProvier({
+            clientId: process.env.NEXT_PUBLIC_CLIENT_ID,
+            clientSecret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
+            authorization: LOGIN_URL
+        })
     ],
+
     secret: process.env.JWT_SECRET,
+
     pages: {
         signIn: '/index'
     },
+
     callbacks: {
         async jwt({token, account, user}){
-            
             //initial sign in
-            if(account && user){
-                return{
+            if (account && user) {
+                return {
                     ...token,
                     accessToken: account.access_token, 
                     refreshToken: account.refresh_token,
@@ -53,7 +56,8 @@ export default NextAuth({
             }
 
             //return previous token if access token has not expired
-            if(Date.now() < token.accessTokenExpires){
+            if (Date.now() < token.accessTokenExpires) {
+                console.log("EXISTING TOKEN IS VALID, NO NEED TO RE-LOGIN")
                 return token;
             }
 
@@ -61,12 +65,12 @@ export default NextAuth({
             return await refreshAccessToken(token)
         },
 
-        async session({ session, token}){
+        async session({ session, token}) {
             session.user.accessToken = token.accessToken;
             session.user.refreshToken = token.refreshToken;
             session.user.username = token.username;
 
             return session;
         },
-        },
-    });
+    },
+});
