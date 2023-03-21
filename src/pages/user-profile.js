@@ -1,8 +1,7 @@
 import Head from 'next/head'
-import {getProviders, signIn} from "next-auth/react"
+import {getProviders, signOut} from "next-auth/react"
 import spotifyApi from 'lib/spotify'
 import {useSession} from 'next-auth/react'
-import Link from 'next/link'
 import { useEffect } from 'react'
 import SpotifyWebApi from 'spotify-web-api-node'
 import { currentlyPlayingSong } from "../../lib/spotify";
@@ -22,6 +21,9 @@ export default function UserProfile({providers}) {
 
       {/* nav stuff */}
       <h1 className='text-white p-5 pb-24 font-bold '>LOGO | TUNEFY</h1>
+      <div className='text-white p-5 pb-24 font-bold '>
+        <button onClick={() => signOut({ callbackUrl: 'http://localhost:3000/' })}>sign out</button>
+      </div>
 
       {/* heading stuff - username, image, etc.*/}
       <div className='text-white pl-5 flex flex-row w-full place-items-center'>
