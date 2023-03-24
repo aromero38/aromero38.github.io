@@ -17,6 +17,7 @@
     "react-particles": "^2.9.3",
     "react-tsparticles": "^2.9.3",
     "spotify-web-api-node": "^5.0.2",
+    "superagent": "^8.0.9",
     "tsparticles": "^2.9.3",
     "tsparticles-slim": "^2.9.3"
   },

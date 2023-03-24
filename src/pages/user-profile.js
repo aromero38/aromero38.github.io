@@ -10,9 +10,6 @@ import { currentlyPlayingSong } from "../../lib/spotify";
 export default function UserProfile({providers}) {
   const {data: session} = useSession();
 
-  let currSong = spotifyApi.getMyCurrentPlayingTrack();
-
-
   return (
     <>
       <Head>
@@ -36,8 +33,7 @@ export default function UserProfile({providers}) {
 
       {/* actual content */}
       <div className='text-white'>
-      hi {currSong.string}
-       
+      hi       
 
       </div>
 
