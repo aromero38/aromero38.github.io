@@ -20,25 +20,26 @@ export default function UserProfile({providers}) {
       </Head>
 
       {/* nav stuff */}
-      <h1 className='text-white p-5 pb-24 font-bold '>LOGO | TUNEFY</h1>
-      <div className='text-white p-5 pb-24 font-bold'>
-        <button onClick={() => signOut({ callbackUrl: 'http://localhost:3000/' })}>sign out</button>
+      <div className='text-white flex flex-row justify-between w-full place-items-center'>
+        <h1 className='text-white p-5 font-bold order-first'>LOGO | TUNEFY</h1>
+        <div className='text-white p-5 font-bold order-end'>
+          <button onClick={() => signOut({ callbackUrl: 'http://localhost:3000/' })}>sign out</button>
+        </div>
       </div>
 
       {/* heading stuff - username, image, etc.*/}
       <div className='text-white pl-5 flex flex-row w-full place-items-center'>
-        <img className='h-24 w-24 mr-12 rounded-full' src={session?.user.image} />
+        <img className='h-24 w-24 mr-12 rounded-full object-center' src={session?.user.image} />
         <p className='text-2xl'>Hello, {session?.user.name}</p>
       </div>
 
       {/* actual content */}
-      <div className='text-white'>
-      hi       
-
+      <div className='bg-green-800 text-white w-full h-full'>
+        <p>test</p>
       </div>
 
       {/* temp music player */}
-      <div>
+      <div className='absolute bottom-0 w-full'>
         <center>
           <button className='text-white'>
             &lt; &lt;
