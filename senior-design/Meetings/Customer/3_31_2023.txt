@@ -1,0 +1,9 @@
+Main page:
+    - Add leaderboards to main page before logging in (?) to add more engagement. 
+    - Maybe add more screenshots of what you can do within the app
+
+User Profile: 
+    - Body section defenitly needs to be a color
+    - Add total songs listened to in week/month/year of right side of username
+    - Make page information to width of phone page, dont make it extend all the way
+    
