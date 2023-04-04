@@ -1,14 +1,13 @@
 import Head from 'next/head'
 import {getProviders, signOut} from "next-auth/react"
 import {useSession} from 'next-auth/react'
-import { useEffect } from 'react'
-import SpotifyWebApi from 'spotify-web-api-node'
-import spotifyApi from 'lib/spotify'
-import { currentlyPlayingSong } from "../../lib/spotify";
+import spotifyApi from 'lib/spotify.js'
+import MusicPlayer from './music-player.js'
 
 
 export default function UserProfile({providers}) {
   const {data: session} = useSession();
+
 
   return (
     <>
@@ -30,33 +29,21 @@ export default function UserProfile({providers}) {
       {/* heading stuff - username, image, etc.*/}
       <div className='text-white pl-5 flex flex-row w-full place-items-center'>
         <img className='h-24 w-24 mr-12 rounded-full object-center' src={session?.user.image} />
-        <p className='text-2xl'>Hello, {session?.user.name}</p>
+        <p className='text-2xl'>Hello, {session?.user.name} </p>
       </div>
 
       {/* actual content */}
       <div className='bg-green-800 text-white w-full h-full'>
         <p>test</p>
+        <button onClick={spotifyApi.skipToNext}>test</button>
       </div>
 
       {/* temp music player */}
-      <div className='absolute bottom-0 w-full'>
-        <center>
-          <button className='text-white'>
-            &lt; &lt;
-          </button>
-
-          <button className='text-white'>
-            <img className='h-12 w-12' src='https://www.freepnglogos.com/uploads/play-button-png/index-media-cover-art-play-button-overlay-5.png'/>
-          </button>
-
-          <button className='text-white'>
-            &gt; &gt;
-          </button>
-        </center>
-      </div>
+      <MusicPlayer></MusicPlayer>
     </>
   );
 }
+
 
 export async function getServerSideProps(){
   const providers = await getProviders();

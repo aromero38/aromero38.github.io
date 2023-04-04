@@ -1,8 +1,6 @@
 import Head from 'next/head'
 import {getProviders, signIn} from "next-auth/react"
-import spotifyApi from 'lib/spotify'
 import {useSession} from 'next-auth/react'
-import Link from 'next/link'
 import ParticlesComponent from '@/components/Particles'
 
 
