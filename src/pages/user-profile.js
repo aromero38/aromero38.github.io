@@ -35,7 +35,6 @@ export default function UserProfile({providers}) {
       {/* actual content */}
       <div className='bg-green-800 text-white w-full h-full'>
         <p>test</p>
-        <button onClick={spotifyApi.skipToNext}>test</button>
       </div>
 
       {/* temp music player */}
