@@ -1,12 +1,15 @@
 import Head from 'next/head'
 import {getProviders, signOut} from "next-auth/react"
 import {useSession} from 'next-auth/react'
-import spotifyApi from 'lib/spotify.js'
 import MusicPlayer from './music-player.js'
+import useSpotify from 'hooks/useSpotify.js'
+import { useEffect, useState } from 'react'
 
 
 export default function UserProfile({providers}) {
   const {data: session} = useSession();
+  const spotifyApi = useSpotify();
+
 
 
   return (
@@ -36,7 +39,7 @@ export default function UserProfile({providers}) {
       <div className='bg-green-800 text-white w-full h-full'>
         <p>test</p>
       </div>
-
+  
       {/* temp music player */}
       <MusicPlayer></MusicPlayer>
     </>
