@@ -1,50 +1,32 @@
 import {useSession} from 'next-auth/react'
-import spotifyApi from 'lib/spotify';
-import SpotifyWebApi from 'spotify-web-api-node';
-import {getMyCurrentPlayingTrack} from 'lib/spotify'
-import { getToken } from 'next-auth/jwt';
-import useSpotify from '/hooks/useSpotify.js';
 import { useEffect, useState } from 'react';
+import useSpotify from 'hooks/useSpotify';
+
 
 
 const MusicPlayer = ({providers}) =>{
+    const {data: session, status} = useSession();
     const spotifyApi = useSpotify();
-    const {data: session} = useSession();
-    const [playlists, setPlaylists] = useState([])
-
-    useEffect(() => {
-      if(spotifyApi.getAccessToken()){
-          spotifyApi.getUserPlaylists(session).then((data) => {
-            setPlaylists(data.items);
-          });
-      }
-    }, [session, spotifyApi]);
-
-    console.log(playlists);
-
 
     return(
         <>
         <div className='absolute bottom-0 w-full'>
         <center>   
-            {/* <p className='text-white' > test my token is {session?.user.accessToken} </p> */}
-            <p className='text-white' > test <button onClick={() => {spotifyApi.playNext()}}>pause</button> </p>
 
-            {playlists.map((playlist) => (
-              <p key={playlist.id} className='text-white'>
-                {playlist.name}
-              </p>
-            ))}
+          <p className='text-white' > </p>
+          <p className='text-white' ><button onClick={() => {spotifyApi.play()}}>play</button> </p>
+          <p className='text-white' ><button onClick={() => {spotifyApi.pause()}}>pause</button> </p>
 
-          <button className='text-white'>
+          <button className='text-white' onClick={() => {spotifyApi.skipToNext()}}>
             &lt; &lt;
           </button>
+
 
           {/* <button className='text-white' onClick={spotifyApi.pause(session?.user.accessToken)}>
             <img className='h-12 w-12' src='https://www.freepnglogos.com/uploads/play-button-png/index-media-cover-art-play-button-overlay-5.png'/>
           </button> */}
 
-          <button className='text-white'>
+          <button className='text-white' onClick={() => {spotifyApi.skipToPrevious()}}>
             &gt; &gt;
           </button>
         </center>
