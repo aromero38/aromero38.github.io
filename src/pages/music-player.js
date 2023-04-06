@@ -27,6 +27,8 @@ const MusicPlayer = ({providers}) =>{
             <img className='h-12 w-12' src='https://www.freepnglogos.com/uploads/play-button-png/index-media-cover-art-play-button-overlay-5.png'/>
           </button> */}
 
+          
+
           <button className='text-white' onClick={() => {spotifyApi.skipToNext()}}>
             &gt; &gt;
           </button>
