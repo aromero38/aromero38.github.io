@@ -8,6 +8,18 @@ const MusicPlayer = ({providers}) =>{
     const {data: session, status} = useSession();
     const spotifyApi = useSpotify();
 
+
+    // spotifyApi.getMyCurrentPlaybackState()
+    // .then(function(data) {
+    //   // Output items
+    //   if (data.body && data.body.is_playing) {
+    //     console.log("User is currently playing something!");
+    //   } else {
+    //     console.log("User is not playing anything, or doing so in private.");
+    //   }
+    // }, function(err) {
+    //   console.log('Something went wrong!', err);
+    // });
     
     return(
         <>

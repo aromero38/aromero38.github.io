@@ -10,19 +10,26 @@ export default function UserProfile({providers}) {
   const {data: session} = useSession();
   const spotifyApi = useSpotify();
 
-  const [playlists, setPlaylists] = useState([]);
-  const [playlistId, setPlaylistId] = useState(null);
+  // const [playlists, setPlaylists] = useState([]);
+  // const [playlistId, setPlaylistId] = useState(null);
 
-  console.log('You picked playlist >>> ', playlistId);
+  // console.log('You picked playlist >>> ', playlistId);
 
-  useEffect(() => {
-    if(spotifyApi.getAccessToken()){
-      spotifyApi.getUserPlaylists().then((data) =>{
-        setPlaylists(data.body.items);
-      });
-    }
-  }, [session, spotifyApi]);
+  // useEffect(() => {
+  //   if(spotifyApi.getAccessToken()){
+  //     spotifyApi.getUserPlaylists().then((data) =>{
+  //       setPlaylists(data.body.items);
+  //     });
+  //   }
+  // }, [session, spotifyApi]);
 
+
+  spotifyApi.getUserPlaylists(session?.user.email)
+  .then(function(data) {
+    console.log('Retrieved playlists', data.body);
+  },function(err) {
+    console.log('Something went wrong!', err);
+  });
 
   return (
     <>
@@ -51,15 +58,6 @@ export default function UserProfile({providers}) {
       <div className='bg-green-800 text-white w-full h-full'>
         <p>test</p>
       </div>
-
-      {playlists.map((playlist) => {
-        <p 
-          key={playlist.id} 
-          onClick={() => setPlaylistId(playlist.id)} className='text-white'
-        >
-          {playlist.name}
-        </p>
-      })}
   
       {/* temp music player */}
       <MusicPlayer></MusicPlayer>
