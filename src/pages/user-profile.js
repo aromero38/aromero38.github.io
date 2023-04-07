@@ -1,77 +1,75 @@
+// spotify & auth stuff
 import Head from 'next/head'
 import {getProviders, signOut} from "next-auth/react"
 import {useSession} from 'next-auth/react'
-import MusicPlayer from './music-player.js'
 import useSpotify from 'hooks/useSpotify.js'
 import { useEffect, useState } from 'react'
 
+// components
+import MusicPlayer from '@/components/MusicPlayer.js'
+import TopNavbar from '@/components/TopNavbar.js'
+import UserNavbar from '@/components/UserNavbar.js'
+import UserContent from '@/components/UserContent.js'
+
 
 export default function UserProfile({providers}) {
-  const {data: session} = useSession();
-  const spotifyApi = useSpotify();
+	const {data: session} = useSession();
+	const spotifyApi = useSpotify();
 
-  // const [playlists, setPlaylists] = useState([]);
-  // const [playlistId, setPlaylistId] = useState(null);
+	// const [playlists, setPlaylists] = useState([]);
+	// const [playlistId, setPlaylistId] = useState(null);
 
-  // console.log('You picked playlist >>> ', playlistId);
+	// console.log('You picked playlist >>> ', playlistId);
 
-  // useEffect(() => {
-  //   if(spotifyApi.getAccessToken()){
-  //     spotifyApi.getUserPlaylists().then((data) =>{
-  //       setPlaylists(data.body.items);
-  //     });
-  //   }
-  // }, [session, spotifyApi]);
+	// useEffect(() => {
+	//   if(spotifyApi.getAccessToken()){
+	//     spotifyApi.getUserPlaylists().then((data) =>{
+	//       setPlaylists(data.body.items);
+	//     });
+	//   }
+	// }, [session, spotifyApi]);
 
 
-  spotifyApi.getUserPlaylists(session?.user.email)
-  .then(function(data) {
-    console.log('Retrieved playlists', data.body);
-  },function(err) {
-    console.log('Something went wrong!', err);
-  });
+	spotifyApi.getUserPlaylists(session?.user.email)
+		.then (function(data) {
+			console.log('Retrieved playlists', data.body);
+		},
+		function(err) {
+			console.log('Something went wrong!', err);
+		});
 
-  return (
-    <>
-      <Head>
-        <title>{session?.user.name} | Tunefy</title>
-        <meta name="description" content="Spotify Statistic Tracker" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+	return (
+	<>
+		<Head>
+			<title>{session?.user.name} | Tunefy</title>
+			<meta name="description" content="Spotify Statistic Tracker" />
+			<meta name="viewport" content="width=device-width, initial-scale=1" />
+			<link rel="icon" href="/favicon.ico" />
+		</Head>
 
-      {/* nav stuff */}
-      <div className='text-white flex flex-row justify-between w-full place-items-center'>
-        <h1 className='text-white p-5 font-bold order-first'>LOGO | TUNEFY</h1>
-        <div className='text-white p-5 font-bold order-end'>
-          <button onClick={() => signOut({ callbackUrl: 'http://localhost:3000/' })}>sign out</button>
-        </div>
-      </div>
+		{/* nav bar */}
+		<TopNavbar />
 
-      {/* heading stuff - username, image, etc.*/}
-      <div className='text-white pl-5 flex flex-row w-full place-items-center'>
-        <img className='h-24 w-24 mr-12 rounded-full object-center' src={session?.user.image} />
-        <p className='text-2xl'>Hello, {session?.user.name} </p>
-      </div>
+		{/* username, image, etc.*/}
+		<UserNavbar />
 
-      {/* actual content */}
-      <div className='bg-green-800 text-white w-full h-full'>
-        <p>test</p>
-      </div>
-  
-      {/* temp music player */}
-      <MusicPlayer></MusicPlayer>
-    </>
-  );
+		{/* actual content */}
+		<UserContent />
+
+		{/* music player */}
+		<div>
+			<MusicPlayer />
+		</div>
+	</>
+	);
 }
 
-
 export async function getServerSideProps(){
-  const providers = await getProviders();
+	const providers = await getProviders();
 
-  return {
-    props: {
-      providers
-    }
-  }
+	return {
+		props: {
+			providers
+		}
+	}
 }
