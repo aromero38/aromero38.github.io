@@ -16,27 +16,16 @@ export default function UserProfile({providers}) {
 	const {data: session} = useSession();
 	const spotifyApi = useSpotify();
 
-	// const [playlists, setPlaylists] = useState([]);
-	// const [playlistId, setPlaylistId] = useState(null);
-
-	// console.log('You picked playlist >>> ', playlistId);
-
-	// useEffect(() => {
-	//   if(spotifyApi.getAccessToken()){
-	//     spotifyApi.getUserPlaylists().then((data) =>{
-	//       setPlaylists(data.body.items);
-	//     });
-	//   }
-	// }, [session, spotifyApi]);
 
 
-	spotifyApi.getUserPlaylists(session?.user.email)
-		.then (function(data) {
-			console.log('Retrieved playlists', data.body);
-		},
-		function(err) {
-			console.log('Something went wrong!', err);
-		});
+
+	// spotifyApi.getUserPlaylists(session?.user.email)
+	// 	.then (function(data) {
+	// 		console.log('Retrieved playlists', data.body);
+	// 	},
+	// 	function(err) {
+	// 		console.log('Something went wrong!', err);
+	// 	});
 
 	return (
 	<>
