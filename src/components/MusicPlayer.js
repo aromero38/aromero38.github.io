@@ -5,8 +5,10 @@ import { useEffect, useState } from 'react';
 
 import useSpotify from 'hooks/useSpotify.js';
 import useSongInfo from 'hooks/useSongInfo.js';
+import usePlayer from 'hooks/usePlayer.js';
 
 import { PlayIcon, PauseIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
+import spotifyApi from "lib/spotify";
 
 const MusicPlayer = ({providers}) => {
     const spotifyApi = useSpotify();
@@ -18,7 +20,10 @@ const MusicPlayer = ({providers}) => {
 		useRecoilState(isPlayingState);
 	const [volume, setVolume] = useState(20);
 
+	const [scrollText, setScrollText] = useState(false);
+
 	const songInfo = useSongInfo();
+	const player = usePlayer();
 
 	const fetchCurrentSong = async () => {
 		if (!songInfo) {
@@ -33,15 +38,36 @@ const MusicPlayer = ({providers}) => {
 		}
 	};
 
-	const fetchCurrentVolume = async () => {
-		spotifyApi.setVolume(volume)
-		.then(function () {
-		  console.log('Setting volume to ' + {volume});
-		  }, function(err) {
-		  //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
-		  console.log('Something went wrong!', err);
-		});
+	const handleVolumeChange = (event) => {
+		
+		const volume = parseInt(event.target.value);
+		setVolume(volume);
+		if(player){
+			player.setVolume(volume/100);
+		}	
 	}
+
+	const handlePlayPause = () =>{
+		spotifyApi.getMyCurrentPlaybackState().then((data) =>{
+			if(data.body.is_playing){
+				spotifyApi.pause();
+				setIsPlaying(false);
+			}
+			else{
+				spotifyApi.play();
+				setIsPlaying(true);
+			}
+			});
+		};
+
+	useEffect(() =>{
+			if(isPlaying){
+				setScrollText(true);
+			}
+			else{
+				setScrollText(false);
+			}
+	}, [isPlaying]);
 
 	useEffect(() => {
 		if (spotifyApi.getAccessToken() && !currentTrackId) {
@@ -49,13 +75,13 @@ const MusicPlayer = ({providers}) => {
 		}
 	}, [currentTrackIdState, spotifyApi, session]);
 
-	useEffect(() => {
-		if (spotifyApi.getAccessToken()) {
-			fetchCurrentVolume();
-		}
-	}, [volume, spotifyApi, session]);
+
+
 
 	console.log(songInfo?.album?.images?.[0]?.url);
+	
+
+	
 
 
     return (
@@ -68,9 +94,13 @@ const MusicPlayer = ({providers}) => {
 
 			{/* middle/player-stuff */}
 			<div className="flex flex-col place-self-center">
+
+				{/* test to play after hours through browser */}
+
+
 				{/* artist - song_name */}
-				<div className="place-self-center font-bold text-[20px]">
-					<p>{songInfo?.artists?.[0]?.name} &mdash; {songInfo?.name}</p>
+				<div className=" place-self-center font-bold text-[20px]" id="scroll-container">
+					<p id={scrollText ? "scroll-text" : ""}>{songInfo?.artists?.[0]?.name} &mdash; {songInfo?.name}</p>
 				</div>
 				{/* album_name */}
 				<div className="place-self-center text-[15px]">
@@ -85,8 +115,8 @@ const MusicPlayer = ({providers}) => {
 					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious() } } />
 					
 					{isPlaying?
-					(<PauseIcon alt="Pause" className="h-12 w-12 text-white hover:scale-105" onClick={() => { spotifyApi.pause() } } />) :
-					<PlayIcon alt="Play" className="h-12 w-12 text-white hover:scale-105" onClick={() => { spotifyApi.play() } } />}
+					(<PauseIcon alt="Pause" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />) :
+					<PlayIcon alt="Play" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />}
 					
 					<ForwardIcon alt="Next" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToNext() } } />
 				</div>
@@ -99,9 +129,7 @@ const MusicPlayer = ({providers}) => {
 					min={0}
 					max={100}
 					value={volume}
-					onChange={(event) => {
-					setVolume(event.target.valueAsNumber);
-				}}
+					onChange={handleVolumeChange}
         />
 
 				
