@@ -39,7 +39,6 @@ const MusicPlayer = ({providers}) => {
 	};
 
 	const handleVolumeChange = (event) => {
-		
 		const volume = parseInt(event.target.value);
 		setVolume(volume);
 		if(player){
@@ -82,6 +81,8 @@ const MusicPlayer = ({providers}) => {
 	
 
 	
+	
+
 
 
     return (
@@ -123,16 +124,14 @@ const MusicPlayer = ({providers}) => {
 			</div>
 
 			{/* right/volume-control */}
-			<div className="flex items-center justify-end hover:scale-[1.015]">
+			<div className="flex items-center justify-end">
 				<input
+					className="hover:scale-[1.015]"
 					type="range"
 					min={0}
 					max={100}
 					value={volume}
-					onChange={handleVolumeChange}
-        />
-
-				
+					onChange={handleVolumeChange} />
 			</div>
 		</div>
 		</>

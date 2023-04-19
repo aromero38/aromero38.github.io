@@ -29,24 +29,30 @@ export default function UserProfile({providers}) {
 
 	return (
 	<>
-		<Head>
-			<title>{session?.user.name} | Tunefy</title>
-			<meta name="description" content="Spotify Statistic Tracker" />
-			<meta name="viewport" content="width=device-width, initial-scale=1" />
-			<link rel="icon" href="/favicon.ico" />
-		</Head>
+		<div className=' absolute w-full'>
+			<Head>
+				<title>{session?.user.name} | Tunefy</title>
+				<meta name="description" content="Spotify Statistic Tracker" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<link rel="icon" href="/favicon.ico" />
+			</Head>
 
-		{/* nav bar */}
-		<TopNavbar />
+			{/* nav bar */}
+			<div className='bg-black pb-[36px] '>
+				<TopNavbar />
+			</div>
 
-		{/* username, image, etc.*/}
-		<UserNavbar />
+			{/* username, image, etc.*/}
+			<div className='bg-black pb-[36px] border-b-[1px] border-gray-500 '>
+				<UserNavbar  />
+			</div>
 
-		{/* actual content */}
-		<UserContent />
+			{/* actual content */}
+			<div className='bg-gradient-to-t from-green-400 to-black'>
+				<UserContent />
+			</div>
 
-		{/* music player */}
-		<div>
+			{/* music player */}
 			<MusicPlayer />
 		</div>
 	</>

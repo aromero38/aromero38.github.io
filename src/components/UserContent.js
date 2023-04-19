@@ -51,29 +51,61 @@ const UserContent = ({providers}) => {
 
 
     return (
-        <>
-            <div className='bg-gradient-to-t from-green-500 to-black absolute text-white h-full w-full'>
-                <p>Top 5 Artists:</p>
-                    <img src={myTopArtists?.[0]?.images?.[1]?.url}></img>
-                    <img src={myTopArtists?.[1]?.images?.[1]?.url}></img> 
-                    <img src={myTopArtists?.[2]?.images?.[1]?.url}></img>  
-                    <ol>
-                        <li>{myTopArtists?.[0]?.name}</li>
-                        <li>{myTopArtists?.[1]?.name}</li>
-                        <li>{myTopArtists?.[2]?.name}</li>
-                    </ol>
-                <br></br>
-                <p>Top 5 songs</p>
-                    <img src={myTopSongs?.[0]?.album?.images?.[1].url}></img>
-                    <img src={myTopSongs?.[1]?.album?.images?.[1].url}></img> 
-                    <img src={myTopSongs?.[2]?.album?.images?.[1].url}></img> 
-                    <ol>
-                        <li>{myTopSongs?.[0]?.name}</li>
-                        <li>{myTopSongs?.[1]?.name}</li>
-                        <li>{myTopSongs?.[2]?.name}</li>
-                        <li>{myTopSongs?.[3]?.name}</li>
-                        <li>{myTopSongs?.[4]?.name}</li>
-                    </ol>
+        <>  
+            <div className='text-white w-full pb-64'>
+                <div className='mt-16 flex justify-between flex-col items-center'>
+                    <h3 className="text-3xl font-bold pb-8">Top Artists</h3>
+                    <div className="flex justify-between flex-row ">
+                        <img src={myTopArtists?.[0]?.images?.[0]?.url} className="h-32 w-32"></img>
+                        <h2>{myTopArtists?.[0]?.name}</h2>
+                    </div>
+                    <div className="flex justify-between flex-row">
+                        <img src={myTopArtists?.[1]?.images?.[0]?.url} className="h-32 w-32"></img>
+                        <h2>{myTopArtists?.[1]?.name}</h2>
+                    </div>
+                    <div className="flex justify-between flex-row">
+                        <img src={myTopArtists?.[2]?.images?.[0]?.url} className="h-32 w-32"></img>
+                        <h2>{myTopArtists?.[2]?.name}</h2>
+                    </div>
+                    <div className="flex justify-between flex-row">
+                        <img src={myTopArtists?.[3]?.images?.[0]?.url} className="h-32 w-32"></img>
+                        <h2>{myTopArtists?.[3]?.name}</h2>
+                    </div>
+                    <div className="flex justify-between flex-row">
+                        <img src={myTopArtists?.[4]?.images?.[0]?.url} className="h-32 w-32"></img>
+                        <h2>{myTopArtists?.[4]?.name}</h2>
+                    </div>
+                </div>
+
+                <div className='mt-32 flex justify-between flex-col items-center'>
+                    <h3 className="text-3xl font-bold pb-8">Top Songs</h3>
+
+                    <div className="flex justify-between flex-row">
+                        <img src={myTopSongs?.[0]?.album?.images?.[1].url} className="h-32 w-32"></img>
+                        <h2 className="pr-5">{myTopSongs?.[0]?.artists?.[0]?.name}</h2>
+                        <h2> {myTopSongs?.[0]?.name}</h2>
+                    </div>
+                    <div className="flex justify-between flex-row">
+                        <img src={myTopSongs?.[1]?.album?.images?.[1].url} className="h-32 w-32"></img>
+                        <h2 className="pr-5">{myTopSongs?.[1]?.artists?.[0]?.name}</h2>
+                        <h2>{myTopSongs?.[1]?.name}</h2>
+                    </div>
+                    <div className="flex justify-between flex-row">
+                        <img src={myTopSongs?.[2]?.album?.images?.[1].url} className="h-32 w-32"></img>
+                        <h2 className="pr-5">{myTopSongs?.[2]?.artists?.[0]?.name}</h2>
+                        <h2>{myTopSongs?.[2]?.name}</h2>
+                    </div>
+                    <div className="flex justify-between flex-row">
+                        <img src={myTopSongs?.[3]?.album?.images?.[1].url} className="h-32 w-32"></img>
+                        <h2 className="pr-5">{myTopSongs?.[3]?.artists?.[0]?.name}</h2>
+                        <h2>{myTopSongs?.[3]?.name}</h2>
+                    </div>
+                    <div className="flex justify-between flex-row">
+                        <img src={myTopSongs?.[4]?.album?.images?.[1].url} className="h-32 w-32"></img>
+                        <h2 className="pr-5">{myTopSongs?.[4]?.artists?.[0]?.name}</h2>
+                        <h2>{myTopSongs?.[4]?.name}</h2>
+                    </div>
+                </div>
             </div>
         </>
     )
