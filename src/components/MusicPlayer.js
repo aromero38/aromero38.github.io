@@ -9,6 +9,7 @@ import usePlayer from 'hooks/usePlayer.js';
 
 import { PlayIcon, PauseIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
 import spotifyApi from "lib/spotify";
+import { get } from "superagent";
 
 const MusicPlayer = ({providers}) => {
     const spotifyApi = useSpotify();
@@ -78,11 +79,6 @@ const MusicPlayer = ({providers}) => {
 
 
 	console.log(songInfo?.album?.images?.[0]?.url);
-	
-
-	
-	
-
 
 
     return (
@@ -90,7 +86,7 @@ const MusicPlayer = ({providers}) => {
 		<div className='bg-gradient-to-t from-black to-gray-900 text-white rounded-t-[8px] fixed h-36 w-full grid grid-cols-3 bottom-0'>
 			{/* left/album-picture */}
 			<div className="flex items-center px-4 ">
-				<img className='h-28 w-28 rounded-[12px] object-center shadow-2xl hover:shadow-green-500/25 hover:scale-[1.025]' src={songInfo?.album?.images?.[0]?.url} />
+				<img className='h-28 w-28 rounded-[12px] object-center shadow-2xl hover:scale-[1.025]' src={songInfo?.album?.images?.[0]?.url} />
 			</div>
 
 			{/* middle/player-stuff */}

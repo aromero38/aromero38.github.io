@@ -38,12 +38,12 @@ export default function UserProfile({providers}) {
 			</Head>
 
 			{/* nav bar */}
-			<div className='bg-black pb-[36px] '>
+			<div className='bg-black sticky top-0'>
 				<TopNavbar />
 			</div>
 
 			{/* username, image, etc.*/}
-			<div className='bg-black pb-[36px] border-b-[1px] border-gray-500 '>
+			<div className='bg-black pt-[36px] pb-[36px] border-b-[1px] border-gray-500 '>
 				<UserNavbar  />
 			</div>
 
