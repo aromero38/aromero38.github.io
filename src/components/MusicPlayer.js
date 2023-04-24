@@ -27,7 +27,7 @@ const MusicPlayer = ({providers}) => {
 	const player = usePlayer();
 
 	const fetchCurrentSong = async () => {
-		if (!songInfo) {
+		//if (!songInfo) {
 			spotifyApi.getMyCurrentPlayingTrack().then((data) => {
 				console.log("Now playing: ", data.body?.item);
 				setCurrentIdTrack(data.body?.item?.id);
@@ -36,16 +36,22 @@ const MusicPlayer = ({providers}) => {
 					setIsPlaying(data.body?.is_playing);
 				});
 			});
-		}
+		//}
 	};
 
-	const handleVolumeChange = (event) => {
-		const volume = parseInt(event.target.value);
+	const handleVolumeChange = async () => {
 		setVolume(volume);
 		if(player){
-			player.setVolume(volume/100);
+			player.setVolume(volume);
+			console.log("The players volume is ${volume}")
 		}	
 	}
+
+	useEffect(()=>{
+		if(player){
+			handleVolumeChange();
+		}
+	}, [volume, spotifyApi, session])
 
 	const handlePlayPause = () =>{
 		spotifyApi.getMyCurrentPlaybackState().then((data) =>{
@@ -70,10 +76,10 @@ const MusicPlayer = ({providers}) => {
 	}, [isPlaying]);
 
 	useEffect(() => {
-		if (spotifyApi.getAccessToken() && !currentTrackId) {
+		if (spotifyApi.getAccessToken()) {
 				fetchCurrentSong();
 		}
-	}, [currentTrackIdState, spotifyApi, session]);
+	}, [spotifyApi, session]);
 
 
 
@@ -109,13 +115,13 @@ const MusicPlayer = ({providers}) => {
 				</div>
 				{/* controls */}
 				<div className="flex place-self-center">
-					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious() } } />
+					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious(); fetchCurrentSong() } } />
 					
 					{isPlaying?
 					(<PauseIcon alt="Pause" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />) :
 					<PlayIcon alt="Play" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />}
 					
-					<ForwardIcon alt="Next" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToNext() } } />
+					<ForwardIcon alt="Next" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToNext(); fetchCurrentSong() } } />
 				</div>
 			</div>
 

@@ -22,9 +22,15 @@ function usePlayer() {
                 volume: 0.5
             });
 
-            setPlayer(player);
+            if(!player){
+                setPlayer(player);
+            }
 
             player.connect();
+
+            player.setName("Tunefy").then(() => {
+                console.log('Player name updated!');
+              });
 
         };
         
