@@ -1,15 +1,15 @@
 import { useSession, getProviders, signOut } from "next-auth/react";
 import { useRecoilState } from 'recoil';
 import { currentTrackIdState, isPlayingState } from "atoms/songAtom";
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import {debounce} from 'lodash';
 
 import useSpotify from 'hooks/useSpotify.js';
 import useSongInfo from 'hooks/useSongInfo.js';
 import usePlayer from 'hooks/usePlayer.js';
 
 import { PlayIcon, PauseIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
-import spotifyApi from "lib/spotify";
-import { get } from "superagent";
+
 
 const MusicPlayer = ({providers}) => {
     const spotifyApi = useSpotify();
@@ -39,19 +39,18 @@ const MusicPlayer = ({providers}) => {
 		//}
 	};
 
-	const handleVolumeChange = async () => {
-		setVolume(volume);
-		if(player){
-			player.setVolume(volume);
-			console.log("The players volume is ${volume}")
-		}	
-	}
-
-	useEffect(()=>{
-		if(player){
-			handleVolumeChange();
+	useEffect(() => {
+		if (volume > 0 && volume < 100) {
+			debouncedAdjustVolume(volume);
 		}
-	}, [volume, spotifyApi, session])
+	  }, [volume]);
+
+	const debouncedAdjustVolume = useCallback(
+		debounce((volume) => {
+		  spotifyApi.setVolume(volume).catch((err) => {});
+		}, 500),
+		[]
+	  );
 
 	const handlePlayPause = () =>{
 		spotifyApi.getMyCurrentPlaybackState().then((data) =>{
@@ -81,10 +80,6 @@ const MusicPlayer = ({providers}) => {
 		}
 	}, [spotifyApi, session]);
 
-
-
-
-	console.log(songInfo?.album?.images?.[0]?.url);
 
 
     return (
@@ -133,7 +128,7 @@ const MusicPlayer = ({providers}) => {
 					min={0}
 					max={100}
 					value={volume}
-					onChange={handleVolumeChange} />
+					onChange={(value)  => setVolume(value)} />
 			</div>
 		</div>
 		</>
