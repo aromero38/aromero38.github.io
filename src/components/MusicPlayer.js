@@ -39,19 +39,6 @@ const MusicPlayer = ({providers}) => {
 		//}
 	};
 
-	useEffect(() => {
-		if (volume > 0 && volume < 100) {
-			debouncedAdjustVolume(volume);
-		}
-	  }, [volume]);
-
-	const debouncedAdjustVolume = useCallback(
-		debounce((volume) => {
-		  spotifyApi.setVolume(volume).catch((err) => {});
-		}, 500),
-		[]
-	  );
-
 	const handlePlayPause = () =>{
 		spotifyApi.getMyCurrentPlaybackState().then((data) =>{
 			if(data.body.is_playing){
@@ -64,6 +51,13 @@ const MusicPlayer = ({providers}) => {
 			}
 			});
 		};
+
+	const debouncedAdjustVolume = useCallback(
+		debounce((volume) => {
+			spotifyApi.setVolume(volume);
+		}, 250),
+		[]
+	);
 
 	useEffect(() =>{
 			if(isPlaying){
@@ -79,6 +73,13 @@ const MusicPlayer = ({providers}) => {
 				fetchCurrentSong();
 		}
 	}, [spotifyApi, session]);
+
+
+	useEffect(() => {
+		if (volume > 0 && volume < 100) {
+			debouncedAdjustVolume(volume);
+		}
+	  }, [volume]);
 
 
 
@@ -105,9 +106,9 @@ const MusicPlayer = ({providers}) => {
 					<p>{songInfo?.album?.name}</p>
 				</div>
 				{/* song progress */}
-				<div className="place-self-center text-[10px]">
-					<p> 0:00 ------------------------------------------------------------------------------------------- 0:00 </p>
-				</div>
+				{/* <div className="place-self-center text-[10px]"> */}
+					{/* <p> 0:00 ------------------------------------------------------------------------------------------- 0:00 </p> */}
+				{/* </div> */}
 				{/* controls */}
 				<div className="flex place-self-center">
 					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious(); fetchCurrentSong() } } />
@@ -125,10 +126,12 @@ const MusicPlayer = ({providers}) => {
 				<input
 					className="hover:scale-[1.015]"
 					type="range"
-					min={0}
-					max={100}
 					value={volume}
-					onChange={(value)  => setVolume(value)} />
+					onChange={(e) => setVolume(Number(e.target.value))} 	
+					//step={0.1}				
+					min={0}
+					max={100}/>
+
 			</div>
 		</div>
 		</>

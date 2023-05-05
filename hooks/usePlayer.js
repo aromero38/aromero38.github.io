@@ -31,11 +31,10 @@ function usePlayer() {
             player.setName("Tunefy").then(() => {
                 console.log('Player name updated!');
               });
-
         };
         
         
-    }, [session, spotifyApi]);
+    }, [player, session, spotifyApi]);
 }
 
 export default usePlayer;
