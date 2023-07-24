@@ -2,6 +2,7 @@
 import Head from 'next/head'
 import {getProviders, signOut} from "next-auth/react"
 import {useSession} from 'next-auth/react'
+import { useEffect, useState } from "react";
 import useSpotify from 'hooks/useSpotify.js'
 
 // components
@@ -9,19 +10,13 @@ import MusicPlayer from '@/components/MusicPlayer.js'
 import TopNavbar from '@/components/TopNavbar.js'
 import UserNavbar from '@/components/UserNavbar.js'
 import UserContent from '@/components/UserContent.js'
+import SearchContent from '@/components/SearchContent.js'
+import { search } from 'superagent'
 
 
 export default function UserProfile({providers}) {
 	const {data: session} = useSession();
 	const spotifyApi = useSpotify();
-	
-	// spotifyApi.getUserPlaylists(session?.user.email)
-	// 	.then (function(data) {
-	// 		console.log('Retrieved playlists', data.body);
-	// 	},
-	// 	function(err) {
-	// 		console.log('Something went wrong!', err);
-	// 	});
 
 	return (
 	<>
@@ -40,12 +35,8 @@ export default function UserProfile({providers}) {
 
 			{/* username, image, etc.*/}
 			<div className='bg-black pt-[36px] pb-[36px] border-b-[1px] border-gray-500 '>
-				<UserNavbar  />
-			</div>
-
-			{/* actual content */}
-			<div className='bg-gradient-to-t from-green-400 to-black'>
-				<UserContent />
+                <UserNavbar  />
+                <SearchContent />
 			</div>
 
 			{/* music player */}
