@@ -2,16 +2,13 @@
 import Head from 'next/head'
 import {getProviders, signOut} from "next-auth/react"
 import {useSession} from 'next-auth/react'
-import { useEffect, useState } from "react";
 import useSpotify from 'hooks/useSpotify.js'
 
 // components
 import MusicPlayer from '@/components/MusicPlayer.js'
 import TopNavbar from '@/components/TopNavbar.js'
 import UserNavbar from '@/components/UserNavbar.js'
-import UserContent from '@/components/UserContent.js'
 import SearchContent from '@/components/SearchContent.js'
-import { search } from 'superagent'
 
 
 export default function UserProfile({providers}) {

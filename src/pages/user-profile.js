@@ -14,14 +14,6 @@ import UserContent from '@/components/UserContent.js'
 export default function UserProfile({providers}) {
 	const {data: session} = useSession();
 	const spotifyApi = useSpotify();
-	
-	// spotifyApi.getUserPlaylists(session?.user.email)
-	// 	.then (function(data) {
-	// 		console.log('Retrieved playlists', data.body);
-	// 	},
-	// 	function(err) {
-	// 		console.log('Something went wrong!', err);
-	// 	});
 
 	return (
 	<>

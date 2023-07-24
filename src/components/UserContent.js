@@ -1,4 +1,4 @@
-import { useSession, getProviders, signOut } from "next-auth/react";
+import { useSession} from "next-auth/react";
 import { useEffect, useState } from 'react';
 
 import useSpotify from 'hooks/useSpotify.js';
