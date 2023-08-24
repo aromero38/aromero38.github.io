@@ -8,7 +8,7 @@ import useSpotify from 'hooks/useSpotify.js'
 import MusicPlayer from '@/components/MusicPlayer.js'
 import TopNavbar from '@/components/TopNavbar.js'
 import UserNavbar from '@/components/UserNavbar.js'
-import SearchContent from '@/components/SearchContent.js'
+import SearchContent from '@/components/SearchContent'
 
 
 export default function UserProfile({providers}) {
@@ -32,8 +32,12 @@ export default function UserProfile({providers}) {
 
 			{/* username, image, etc.*/}
 			<div className='bg-black pt-[36px] pb-[36px] border-b-[1px] border-gray-500 '>
-                <UserNavbar  />
-                <SearchContent />
+
+			</div>
+
+			{/* actual content */}
+			<div className='bg-gradient-to-t from-green-400 to-black'>
+				<SearchContent />
 			</div>
 
 			{/* music player */}
