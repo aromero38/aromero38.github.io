@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from "react";
 import useSpotify from 'hooks/useSpotify.js'
 
-
+import { PlayIcon } from '@heroicons/react/24/solid';
 
 export default function UserProfile({providers}) {
 	const {data: session} = useSession();
@@ -64,93 +64,169 @@ export default function UserProfile({providers}) {
 		{/* search content */}
 		<div className="w-100% h-[1000px] mt-24 mx-36 text-white relative">
 			<div className="flex flex-row h-3/4 justify-center pb-8">
-
 				<div className="flex flex-col w-1/3 mr-12">
 					<h2 className="text-3xl font-semibold pb-4">Top Result</h2>
 					<div className="w-full h-full relative group"> 
 					<div className="relative h-[90%] w-5/6 hover:bg-gradient-to-b from-transparent to-black group-hover:opacity-100 rounded-md border-[0.1px] border-slate-400 z-0"> {/* Hover container */}
 						{/* gradient overlay */}
-						<div className="absolute inset-0 rounded-md bg-gradient-to-b from-transparent to-black opacity-0 group-hover:opacity-90 z-10"></div>
+						<div className="absolute inset-0 rounded-md bg-gradient-to-b from-transparent to-black opacity-100 group-hover:opacity-100 z-10"></div>
+
 						{/* cover */}
 						<img src={searchedTrack?.tracks?.items?.[0]?.album?.images[0]?.url} className="h-full w-full object-none z-0 rounded-md"></img>
+
 						{/* text */}
-						<div className="absolute bottom-[20px] left-2 px-4 text-white text-2xl font-bold opacity-0 group-hover:opacity-100 z-30 w-[75%]">
+						<div className="absolute bottom-[20px] left-2 px-4 text-white text-2xl font-bold opacity-100 group-hover:opacity-100 z-30 w-[75%]">
 							<h2 className="text-2xl font-semibold truncate">{searchedTrack?.tracks?.items?.[0]?.album?.name}</h2>
 							<h2 className="text-sm font-semibold truncate">{searchedTrack?.tracks?.items?.[0]?.album?.artists?.[0]?.name}</h2>
 						</div>
+
 						{/* play btn */}
-						<div className="absolute bottom-[25px] right-10 px-4 text-white text-2xl font-bold opacity-0 group-hover:opacity-100 z-30">
-							<h2 className="text-2xl font-semibold w-3/4">&lt;&gt;</h2>
+						<div className="absolute bottom-[25px] right-4 text-white text-2xl font-bold opacity-0 group-hover:opacity-100 z-30">
+							<div className="h-12 w-12 bg-green-900 rounded-full hover:scale-105">
+								<PlayIcon alt="Play" className="h-12 w-12 text-white scale-[75%]"  />
+							</div>
 						</div>
 					</div>
 				</div>
-
-
-
-				</div>
-
-				<div className= "flex flex-col bg-green-800 w-1/3 mr-6 justify-center text-center">
-					top artists
-				</div>
-
-				<div className="flex flex-col bg-pink-800 w-1/3 justify-center text-center">
-					top songs
-				</div>
 			</div>
 
-			<div className="flex flex-row h-1/4">
-				<div className="flex flex-col bg-orange-800 w-full justify-center text-center">
-					top albums
-				</div>
-			</div>
-		</div>
+			<div className= "flex flex-col w-1/3 mr-6">
+				<h2 className="text-3xl font-semibold pb-4">Artists</h2>
 
-
-
-
-		<div className='m-12 w-100% text-white pb-48 h-100% flex-col'>
-			{/* top album name that will pop up */}
-			<div className="pr-12 w-30% flex-row static">
-				{/* top result */}
-				<div className="pr-12 w-30% flex-col static">
-					<h2 className="text-3xl font-semibold justify-start pb-8">Top Result</h2>
-
-					<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[0]?.album?.name}</h2>
-				</div>
-
-				{/* top 3 artists that will pop up */}
-				<div className="pr-12 w-30% flex-col static">
-					<h2 className="text-3xl font-semibold justify-start">Artists</h2>
+				<div className="flex flex-row items-center pb-8">
 					<img src={searchedArtist?.artists?.items?.[0]?.images?.[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
 					<h2 className="text-2xl font-semibold">{searchedArtist?.artists?.items?.[0]?.name}</h2>
+				</div>
 
+				<div className="flex flex-row items-center pb-8">
 					<img src={searchedArtist?.artists?.items?.[1]?.images?.[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
 					<h2 className="text-2xl font-semibold">{searchedArtist?.artists?.items?.[1]?.name}</h2>
+				</div>
 
+				<div className="flex flex-row items-center pb-8">
 					<img src={searchedArtist?.artists?.items?.[2]?.images?.[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
 					<h2 className="text-2xl font-semibold">{searchedArtist?.artists?.items?.[2]?.name}</h2>
 				</div>
 
-				{/* top 3 songs that will pop up */}
-				<div className="pr-12 w-30% flex-col static">
-				<h2 className="text-3xl font-semibold justify-start">Songs</h2>
+				<div className="flex flex-row items-center pb-8">
+					<img src={searchedArtist?.artists?.items?.[3]?.images?.[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
+					<h2 className="text-2xl font-semibold">{searchedArtist?.artists?.items?.[3]?.name}</h2>
+				</div>
+			</div>
+
+			<div className= "flex flex-col w-1/3 mr-6">
+				<h2 className="text-3xl font-semibold pb-4">Tracks</h2>
+
+				<div className="flex flex-row items-center pb-8">
 					<img src={searchedTrack?.tracks?.items?.[0]?.album?.images[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
-					<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[0]?.name}</h2>
+					<div>
+						<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[0]?.name}</h2>
+						<h2 className="text-sm">{searchedTrack?.tracks?.items?.[0]?.album?.artists?.[0]?.name}</h2>
+					</div>
+				</div>
 
+				<div className="flex flex-row items-center pb-8">
 					<img src={searchedTrack?.tracks?.items?.[1]?.album?.images[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
-					<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[1]?.name}</h2>
+					<div>
+						<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[1]?.name}</h2>
+						<h2 className="text-sm">{searchedTrack?.tracks?.items?.[1]?.album?.artists?.[0]?.name}</h2>
+					</div>
+				</div>
 
+				<div className="flex flex-row items-center pb-8">
 					<img src={searchedTrack?.tracks?.items?.[2]?.album?.images[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
-					<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[2]?.name}</h2>
+					<div>
+						<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[2]?.name}</h2>
+						<h2 className="text-sm">{searchedTrack?.tracks?.items?.[2]?.album?.artists?.[0]?.name}</h2>
+					</div>
+				</div>
+
+				<div className="flex flex-row items-center pb-8">
+					<img src={searchedTrack?.tracks?.items?.[3]?.album?.images[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
+					<div>
+						<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[3]?.name}</h2>
+						<h2 className="text-sm">{searchedTrack?.tracks?.items?.[3]?.album?.artists?.[0]?.name}</h2>
+					</div>
 				</div>
 			</div>
 		</div>
 
+		<div className="flex flex-col h-96 w-full">
+			<div className="flex flex-row">
+				<h2 className="text-3xl font-semibold pb-4">Albums</h2>
+			</div>
+			<div className="flex flex-row justify-between">
+				<div className="text-center">
+					<img src={searchedTrack?.tracks?.items?.[0]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+					<h2 className="text-xs w-48">{searchedTrack?.tracks?.items?.[0]?.album?.artists?.[0]?.name}</h2>
+					<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[0]?.album?.name}</h2>
+				</div>
+				<div className="text-center">
+					<img src={searchedTrack?.tracks?.items?.[1]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+					<h2 className="text-xs w-48">{searchedTrack?.tracks?.items?.[1]?.album?.artists?.[0]?.name}</h2>
+					<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[1]?.album?.name}</h2>
+				</div>
+				<div className="text-center">
+					<img src={searchedTrack?.tracks?.items?.[2]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+					<h2 className="text-xs w-48">{searchedTrack?.tracks?.items?.[2]?.album?.artists?.[0]?.name}</h2>
+					<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[2]?.album?.name}</h2>
+				</div>
+				<div className="text-center">
+					<img src={searchedTrack?.tracks?.items?.[3]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+					<h2 className="text-xs w-48">{searchedTrack?.tracks?.items?.[3]?.album?.artists?.[0]?.name}</h2>
+					<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[3]?.album?.name}</h2>
+				</div>
+				<div className="text-center">
+					<img src={searchedTrack?.tracks?.items?.[4]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+					<h2 className="text-xs w-48">{searchedTrack?.tracks?.items?.[4]?.album?.artists?.[0]?.name}</h2>
+					<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[4]?.album?.name}</h2>
+				</div>
+				<div className="text-center">
+					<img src={searchedTrack?.tracks?.items?.[5]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+					<h2 className="text-xs w-48">{searchedTrack?.tracks?.items?.[5]?.album?.artists?.[0]?.name}</h2>
+					<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[5]?.album?.name}</h2>
+				</div>
+			</div>
+		</div>
+
+		{/* <div className="flex flex-row pb-[1500px] w-full">
+			<div className="flex flex-col w-full h-64">
+				
+
+				<div className="flex flex-row w-full justify-between">
+					<div className="flex flex-col align-middle justify-center w-48 text-center mr-8">
+						<img src={searchedTrack?.tracks?.items?.[0]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+						<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[0]?.album?.name}</h2>
+					</div>
+					<div className="flex flex-col align-middle justify-center w-48 text-center mr-8">
+						<img src={searchedTrack?.tracks?.items?.[1]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+						<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[1]?.album?.name}</h2>
+					</div>
+					<div className="flex flex-col align-middle justify-center w-48 text-center mr-8">
+						<img src={searchedTrack?.tracks?.items?.[2]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+						<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[2]?.album?.name}</h2>
+					</div>
+					<div className="flex flex-col align-middle justify-center w-48 text-center mr-8">
+						<img src={searchedTrack?.tracks?.items?.[3]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+						<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[3]?.album?.name}</h2>
+					</div>
+					<div className="flex flex-col align-middle justify-center w-48 h-auto text-center mr-8">
+						<img src={searchedTrack?.tracks?.items?.[4]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+						<h2 className="text-sm font-semibold w-48 h-1/4">{searchedTrack?.tracks?.items?.[4]?.album?.name}</h2>
+					</div>
+					<div className="flex flex-col align-middle justify-center w-48 text-center mr-8">
+						<img src={searchedTrack?.tracks?.items?.[5]?.album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
+						<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[5]?.album?.name}</h2>
+					</div>
+				</div>
+			</div>
+		</div> */}
+	</div>
+
 					{/* 3 more album names that will pop up */}
 			{/* <div className="flex flex-row">
 			<h2 className="text-3xl font-semibold justify-start">Albums</h2>
-				<img src={searchedTrack?.tracks?.items?.[1]?.album?.images[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
-				<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[1]?.album?.name}</h2>
+				
 
 				<img src={searchedTrack?.tracks?.items?.[2]?.album?.images[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
 				<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[2]?.album?.name}</h2>

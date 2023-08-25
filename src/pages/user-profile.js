@@ -17,7 +17,7 @@ export default function UserProfile({providers}) {
 
 	return (
 	<>
-		<div className=' absolute w-full'>
+		<div className='absolute w-full'>
 			<Head>
 				<title>{session?.user.name} | Tunefy</title>
 				<meta name="description" content="Spotify Statistic Tracker" />
