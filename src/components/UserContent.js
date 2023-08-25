@@ -15,35 +15,44 @@ const UserContent = ({providers}) => {
     const topSongs = useTop();
 
     spotifyApi.getMyTopTracks()
-    .then(function(data) {
-      let topTracks = data.body.items;
-      console.log(topTracks);
-    }, function(err) {
-      console.log('Something went wrong!', err);
-    });
+    .then(
+        function(data) {
+            let topTracks = data.body.items;
+            console.log(topTracks);
+        }, 
+        function(err) {
+            console.log('Something went wrong!', err);
+        }
+    );
 
     const fetchTop = () => {
-        if(!topArtists){
+        if (!topArtists) {
             spotifyApi.getMyTopArtists()
-            .then(function(data) {
-                setMyTopArtists(data.body.items);
-            }, function(err) {
-              console.log('Something went wrong!', err);
-            });
+            .then(
+                function(data) {
+                    setMyTopArtists(data.body.items);
+                }, 
+                function(err) {
+                    console.log('Something went wrong!', err);
+                }
+            );
         }
-        if(!topSongs){
+        if (!topSongs) {
             spotifyApi.getMyTopTracks()
-            .then(function(data) {
-            setmyTopSongs(data.body.items);
-            }, function(err) {
-            console.log('Something went wrong!', err);
-            });
+            .then(
+                function(data) {
+                    setmyTopSongs(data.body.items);
+                }, 
+                function(err) {
+                    console.log('Something went wrong!', err);
+                }
+            );
         }
     }
 
 
     useEffect(() => {
-        if(spotifyApi.getAccessToken()){
+        if (spotifyApi.getAccessToken()) {
             fetchTop();
         }
     }, [spotifyApi, session]);

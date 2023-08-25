@@ -17,7 +17,7 @@ export default function UserProfile({providers}) {
 
 	return (
 	<>
-		<div className=' absolute w-full'>
+		<div className='absolute w-full'>
 			<Head>
 				<title>{session?.user.name} | Tunefy</title>
 				<meta name="description" content="Spotify Statistic Tracker" />
@@ -26,22 +26,17 @@ export default function UserProfile({providers}) {
 			</Head>
 
 			{/* nav bar */}
-			<div className='bg-black sticky top-0'>
+			<div className='bg-black sticky top-0 z-50'>
 				<TopNavbar />
 			</div>
 
-			{/* username, image, etc.*/}
-			<div className='bg-black pt-[36px] pb-[36px] border-b-[1px] border-gray-500 '>
-
-			</div>
-
-			{/* actual content */}
+			{/* searched content */}
 			<div className='bg-gradient-to-t from-green-400 to-black'>
 				<SearchContent />
 			</div>
 
 			{/* music player */}
-			<MusicPlayer />
+			<MusicPlayer className='z-50' />
 		</div>
 	</>
 	);

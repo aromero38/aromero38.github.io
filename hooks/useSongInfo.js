@@ -7,6 +7,7 @@ function useSongInfo() {
     const spotifyApi = useSpotify();
     const [currentIdTrack, setCurrentIdTrack] =
         useRecoilState(currentTrackIdState);
+        
     const [songInfo, setSongInfo] = useState(null);
     
     useEffect(() => {

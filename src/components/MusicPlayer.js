@@ -17,9 +17,11 @@ const MusicPlayer = ({providers}) => {
 
 	const [currentTrackId, setCurrentIdTrack] = 
 		useRecoilState(currentTrackIdState);
+
 	const [isPlaying, setIsPlaying] = 
 		useRecoilState(isPlayingState);
-	const [volume, setVolume] = useState(20);
+		
+	const [volume, setVolume] = useState();
 
 	const [scrollText, setScrollText] = useState(false);
 
@@ -34,6 +36,7 @@ const MusicPlayer = ({providers}) => {
 				
 				spotifyApi.getMyCurrentPlaybackState().then((data) => {
 					setIsPlaying(data.body?.is_playing);
+					setVolume(data.body?.device.volume_percent)
 				});
 			});
 		//}
@@ -41,7 +44,7 @@ const MusicPlayer = ({providers}) => {
 
 	const handlePlayPause = () =>{
 		spotifyApi.getMyCurrentPlaybackState().then((data) =>{
-			if(data.body.is_playing){
+			if (data.body?.is_playing) {
 				spotifyApi.pause();
 				setIsPlaying(false);
 			}
@@ -59,15 +62,6 @@ const MusicPlayer = ({providers}) => {
 		[]
 	);
 
-	useEffect(() =>{
-			if(isPlaying){
-				setScrollText(true);
-			}
-			else{
-				setScrollText(false);
-			}
-	}, [isPlaying]);
-
 	useEffect(() => {
 		if (spotifyApi.getAccessToken()) {
 				fetchCurrentSong();
@@ -81,7 +75,14 @@ const MusicPlayer = ({providers}) => {
 		}
 	  }, [volume]);
 
-
+	useEffect(() =>{
+			if (isPlaying) {
+				setScrollText(true);
+			}
+			else {
+				setScrollText(false);
+			}
+	}, [isPlaying]);
 
     return (
 		<>
@@ -128,7 +129,7 @@ const MusicPlayer = ({providers}) => {
 					type="range"
 					value={volume}
 					onChange={(e) => setVolume(Number(e.target.value))} 	
-					//step={0.1}				
+					// step={1}				
 					min={0}
 					max={100}/>
 
