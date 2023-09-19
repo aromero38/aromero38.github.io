@@ -1,6 +1,6 @@
 import {useSession} from 'next-auth/react'
 
-const UserNavbar = ({providers}) => {
+const UserNavbar = () => {
     const {data: session} = useSession();
     return (
         <>

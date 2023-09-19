@@ -1,40 +1,49 @@
-import { useEffect, useState } from "react";
-import { signIn, useSession } from "next-auth/react";
+import { useEffect, useState, useRef } from "react";
 import spotifyApi from "lib/spotify";
 
 function usePlayer() {
-    const {data: session, status } = useSession();
-    const [player, setPlayer] = useState(undefined);
+  const [player, setPlayer] = useState(null);
+  const playerRef = useRef(null);
 
-    useEffect(() =>{
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
 
-        const script = document.createElement("script");
-        script.src = "https://sdk.scdn.co/spotify-player.js";
-        script.async = true;
+    script.onload = () => {
+      if (!playerRef.current) {
+        const playerInstance = new window.Spotify.Player({
+          name: "Tunefy",
+          getOAuthToken: (cb) => {
+            cb(spotifyApi.getAccessToken());
+          },
+          volume: 0.5,
+        });
 
-        document.body.appendChild(script);
+        playerInstance.addListener("ready", ({ device_id }) => {
+          console.log("Device ID", device_id);
+          // Here you can set your site as the active device playing music
+          // You can use the device_id to play music on this device
+          // Example: spotifyApi.play({ device_id, uris: ["spotify:track:your_track_uri"] });
+        });
 
-        window.onSpotifyWebPlaybackSDKReady = () => {
+        playerInstance.connect();
 
-            const player = new window.Spotify.Player({
-                name: 'Web Playback SDK',
-                getOAuthToken: cb => { cb(spotifyApi.getAccessToken()) },
-                volume: 0.5
-            });
+        playerRef.current = playerInstance;
+        setPlayer(playerInstance);
+      }
+    };
 
-            if(!player){
-                setPlayer(player);
-            }
+    document.body.appendChild(script);
 
-            player.connect();
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.disconnect();
+      }
+    };
+  }, []);
 
-            player.setName("Tunefy").then(() => {
-                console.log('Player name updated!');
-              });
-        };
-        
-        
-    }, [player, session, spotifyApi]);
+  return player;
 }
 
 export default usePlayer;

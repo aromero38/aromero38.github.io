@@ -1,5 +1,4 @@
 import { Html, Head, Main, NextScript } from 'next/document'
-import ParticlesComponent from '../components/Particles'
 
 const Document = () => (
 	<Html>

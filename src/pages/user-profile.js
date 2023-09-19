@@ -13,7 +13,6 @@ import UserContent from '@/components/UserContent.js'
 
 export default function UserProfile({providers}) {
 	const {data: session} = useSession();
-	const spotifyApi = useSpotify();
 
 	return (
 	<>

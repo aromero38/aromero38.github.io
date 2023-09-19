@@ -8,7 +8,6 @@ import { PlayIcon } from '@heroicons/react/24/solid';
 export default function UserProfile() {
 	const {data: session} = useSession();
 	const spotifyApi = useSpotify();
-  	// const [mySearchInfo, setMySearchInfo] = useState([])
 
 	const [searchValue, setSearchValue] = useState('');
 
@@ -74,9 +73,9 @@ export default function UserProfile() {
 
 	const displayTopArtist = (searchedArtist) => {
 
-		const topArtist = [];
+		const topArtists = [];
 		for(let i = 0; i < 5; i++){
-			topArtist.push(
+			topArtists.push(
 				<div className="flex flex-row items-center pb-8">
 					<img src={searchedArtist?.artists?.items?.[i]?.images?.[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
 					<h2 className="text-2xl font-semibold">{searchedArtist?.artists?.items?.[i]?.name}</h2>
@@ -88,17 +87,17 @@ export default function UserProfile() {
 		<>
 			<div className= "flex flex-col w-1/3 mr-6">
 				<h2 className="text-3xl font-semibold pb-4">Artists</h2>
-				{topArtist}
+				{topArtists}
 			</div>
 		</>
 		)
 	}
 
-	const displayTopTracks = (searchedArtist) => {
+	const displayTopTracks = (searchedTrack) => {
 
-		const topTrack = [];
+		const topTracks = [];
 		for(let i = 0; i < 5; i++){
-			topTrack.push(
+			topTracks.push(
 				<div className="flex flex-row items-center pb-8">
 					<img src={searchedTrack?.tracks?.items?.[i]?.album?.images[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
 					<div>
@@ -113,7 +112,7 @@ export default function UserProfile() {
 		<>
 			<div className= "flex flex-col w-1/3 mr-6">
 				<h2 className="text-3xl font-semibold pb-4">Tracks</h2>
-				{topTrack}
+				{topTracks}
 			</div>
 		</>
 		)
@@ -121,9 +120,9 @@ export default function UserProfile() {
 
 	const displayTopAlbums = (searchedArtist) => {
 
-		const topAlbum = [];
-		for(let i = 0; i < 5; i++){
-			topAlbum.push(
+		const topAlbums = [];
+		for(let i = 1; i < 6; i++){
+			topAlbums.push(
 				<div className="text-center">
 					<h2 className="text-xs w-48">{searchedTrack?.tracks?.items?.[i]?.album?.artists?.[0]?.name}</h2>
 					<h2 className="text-sm font-semibold w-48">{searchedTrack?.tracks?.items?.[i]?.album?.name}</h2>
@@ -139,7 +138,7 @@ export default function UserProfile() {
 					<h2 className="text-3xl font-semibold pb-4">Albums</h2>
 				</div>
 				<div className="flex flex-row justify-between">
-					{topAlbum}
+					{topAlbums}
 				</div>
 			</div>
 		</>
@@ -180,7 +179,7 @@ export default function UserProfile() {
 				<div className="flex flex-row h-3/4 justify-center pb-8">
 					{displayTopResult(searchedTrack)}
 					{displayTopArtist(searchedArtist)}
-					{displayTopTracks(searchedArtist)}
+					{displayTopTracks(searchedTrack)}
 				</div>
 				{displayTopAlbums(searchedTrack)}
 			</div>

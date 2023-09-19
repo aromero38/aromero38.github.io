@@ -11,36 +11,29 @@ import usePlayer from 'hooks/usePlayer.js';
 import { PlayIcon, PauseIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
 
 
-const MusicPlayer = ({providers}) => {
+const MusicPlayer = () => {
     const spotifyApi = useSpotify();
-	const {data: session, status} = useSession();
 
-	const [currentTrackId, setCurrentIdTrack] = 
-		useRecoilState(currentTrackIdState);
-
-	const [isPlaying, setIsPlaying] = 
-		useRecoilState(isPlayingState);
-		
+	const [isPlaying, setIsPlaying] = useRecoilState(isPlayingState);	
 	const [volume, setVolume] = useState();
-
 	const [scrollText, setScrollText] = useState(false);
-
 	const songInfo = useSongInfo();
+	const [currentTrack, setCurrentTrack] = useState(null);
 	const player = usePlayer();
 
-	const fetchCurrentSong = async () => {
-		//if (!songInfo) {
-			spotifyApi.getMyCurrentPlayingTrack().then((data) => {
-				console.log("Now playing: ", data.body?.item);
-				setCurrentIdTrack(data.body?.item?.id);
-				
-				spotifyApi.getMyCurrentPlaybackState().then((data) => {
-					setIsPlaying(data.body?.is_playing);
-					setVolume(data.body?.device.volume_percent)
-				});
-			});
-		//}
-	};
+    useEffect(() => {
+		if (player) {
+		  player.addListener("player_state_changed", (state) => {
+			if (state && state.track_window && state.track_window.current_track) {
+			  setCurrentTrack(state.track_window.current_track);
+			  setIsPlaying(!state.paused);
+			} else {
+			  setCurrentTrack(null);
+			  setIsPlaying(false);
+			}
+		  });
+		}
+	  }, [player]);
 
 	const handlePlayPause = () =>{
 		spotifyApi.getMyCurrentPlaybackState().then((data) =>{
@@ -63,13 +56,6 @@ const MusicPlayer = ({providers}) => {
 	);
 
 	useEffect(() => {
-		if (spotifyApi.getAccessToken()) {
-				fetchCurrentSong();
-		}
-	}, [spotifyApi, session]);
-
-
-	useEffect(() => {
 		if (volume > 0 && volume < 100) {
 			debouncedAdjustVolume(volume);
 		}
@@ -89,7 +75,7 @@ const MusicPlayer = ({providers}) => {
 		<div className='bg-gradient-to-t from-black to-gray-900 text-white rounded-t-[8px] fixed h-36 w-full grid grid-cols-3 bottom-0'>
 			{/* left/album-picture */}
 			<div className="flex items-center px-4 ">
-				<img className='h-28 w-28 rounded-[12px] object-center shadow-2xl hover:scale-[1.025]' src={songInfo?.album?.images?.[0]?.url} />
+				<img className='h-28 w-28 rounded-[12px] object-center shadow-2xl hover:scale-[1.025]' src={currentTrack?.album?.images?.[0]?.url} />
 			</div>
 
 			{/* middle/player-stuff */}
@@ -97,7 +83,7 @@ const MusicPlayer = ({providers}) => {
 
 				{/* artist - song_name */}
 				<div className=" place-self-center font-bold text-[20px]" id="scroll-container">
-					<p id={scrollText ? "scroll-text" : ""}>{songInfo?.artists?.[0]?.name} &mdash; {songInfo?.name}</p>
+					<p id={scrollText ? "scroll-text" : ""}>{currentTrack?.artists?.[0]?.name} - {currentTrack?.name}</p>
 				</div>
 				{/* album_name */}
 				<div className="place-self-center text-[15px]">
@@ -109,13 +95,13 @@ const MusicPlayer = ({providers}) => {
 				{/* </div> */}
 				{/* controls */}
 				<div className="flex place-self-center">
-					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious(); fetchCurrentSong() } } />
+					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious(); } } />
 					
 					{isPlaying?
 					(<PauseIcon alt="Pause" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />) :
 					<PlayIcon alt="Play" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />}
 					
-					<ForwardIcon alt="Next" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToNext(); fetchCurrentSong() } } />
+					<ForwardIcon alt="Next" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToNext(); } } />
 				</div>
 			</div>
 
