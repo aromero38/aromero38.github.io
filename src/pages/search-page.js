@@ -36,7 +36,7 @@ export default function UserProfile({providers}) {
 			</div>
 
 			{/* music player */}
-			<MusicPlayer className='z-50' />
+			<MusicPlayer/>
 		</div>
 	</>
 	);

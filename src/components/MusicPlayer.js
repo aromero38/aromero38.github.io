@@ -95,9 +95,6 @@ const MusicPlayer = ({providers}) => {
 			{/* middle/player-stuff */}
 			<div className="flex flex-col place-self-center">
 
-				{/* test to play after hours through browser */}
-
-
 				{/* artist - song_name */}
 				<div className=" place-self-center font-bold text-[20px]" id="scroll-container">
 					<p id={scrollText ? "scroll-text" : ""}>{songInfo?.artists?.[0]?.name} &mdash; {songInfo?.name}</p>
