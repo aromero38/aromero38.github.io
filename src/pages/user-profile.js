@@ -1,3 +1,6 @@
+//not used right now
+
+
 // spotify & auth stuff
 import Head from 'next/head'
 import {getProviders, signOut} from "next-auth/react"
@@ -9,6 +12,8 @@ import MusicPlayer from '@/components/MusicPlayer.js'
 import TopNavbar from '@/components/TopNavbar.js'
 import UserNavbar from '@/components/UserNavbar.js'
 import UserContent from '@/components/UserContent.js'
+import SearchContent from '@/components/SearchContent'
+
 
 
 export default function UserProfile({providers}) {
@@ -40,7 +45,7 @@ export default function UserProfile({providers}) {
 			</div>
 
 			{/* music player */}
-			<MusicPlayer />
+			{/* <MusicPlayer /> */}
 		</div>
 	</>
 	);

@@ -1,3 +1,6 @@
+//not used right now
+
+
 // spotify & auth stuff
 import Head from 'next/head'
 import {getProviders, signOut} from "next-auth/react"
@@ -36,7 +39,7 @@ export default function UserProfile({providers}) {
 			</div>
 
 			{/* music player */}
-			<MusicPlayer/>
+			{/* <MusicPlayer/> */}
 		</div>
 	</>
 	);

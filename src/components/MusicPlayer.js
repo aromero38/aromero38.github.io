@@ -35,6 +35,21 @@ const MusicPlayer = () => {
 		}
 	  }, [player]);
 
+	useEffect(() => {
+		if (volume > 0 && volume < 100) {
+			debouncedAdjustVolume(volume);
+		}
+	  }, [volume]);
+
+	useEffect(() =>{
+			if (isPlaying) {
+				setScrollText(true);
+			}
+			else {
+				setScrollText(false);
+			}
+	}, [isPlaying]);
+
 	const handlePlayPause = () =>{
 		spotifyApi.getMyCurrentPlaybackState().then((data) =>{
 			if (data.body?.is_playing) {
@@ -54,21 +69,6 @@ const MusicPlayer = () => {
 		}, 250),
 		[]
 	);
-
-	useEffect(() => {
-		if (volume > 0 && volume < 100) {
-			debouncedAdjustVolume(volume);
-		}
-	  }, [volume]);
-
-	useEffect(() =>{
-			if (isPlaying) {
-				setScrollText(true);
-			}
-			else {
-				setScrollText(false);
-			}
-	}, [isPlaying]);
 
     return (
 		<>

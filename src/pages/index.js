@@ -33,7 +33,8 @@ export default function Home({ providers }) {
 			{/* login button */}
 			<div className='rounded-full bg-green-500 text-white font-bold p-3.5 hover:bg-green-600 gap-x-5'>
 				{Object.values(providers).map((provider) => (
-						<button onClick={() => signIn(provider.id, {callbackUrl: "/user-profile"})}>
+						// <button onClick={() => signIn(provider.id, {callbackUrl: "/user-profile"})}>
+						<button onClick={() => signIn(provider.id, {callbackUrl: "/main"})}>
 							Login With {provider.name}
 						</button>
 				))}
