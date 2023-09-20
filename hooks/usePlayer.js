@@ -22,6 +22,7 @@ function usePlayer() {
 
         playerInstance.addListener("ready", ({ device_id }) => {
           console.log("Device ID", device_id);
+          spotifyApi.transferMyPlayback([device_id])
           // Here you can set your site as the active device playing music
           // You can use the device_id to play music on this device
           // Example: spotifyApi.play({ device_id, uris: ["spotify:track:your_track_uri"] });

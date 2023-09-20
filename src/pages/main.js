@@ -1,6 +1,6 @@
 // spotify & auth stuff
 import Head from 'next/head'
-import {getProviders, signOut} from "next-auth/react"
+import { getProviders, signOut } from "next-auth/react"
 import {useSession} from 'next-auth/react'
 import { useState } from 'react'
 
@@ -20,7 +20,7 @@ export default function UserProfile({providers}) {
 
     const currentlyDisplayedPage = () => {
         
-        if(currentPage == "UserContent"){
+        if (currentPage == "UserContent") {
             return (
                 <>
                     {/* username, image, etc.*/}

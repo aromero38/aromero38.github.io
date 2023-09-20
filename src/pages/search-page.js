@@ -37,9 +37,6 @@ export default function UserProfile({providers}) {
 			<div className='bg-gradient-to-t from-green-400 to-black pb-64'>
 				<SearchContent />
 			</div>
-
-			{/* music player */}
-			{/* <MusicPlayer/> */}
 		</div>
 	</>
 	);
