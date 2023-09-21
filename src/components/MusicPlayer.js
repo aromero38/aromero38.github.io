@@ -19,6 +19,9 @@ const MusicPlayer = () => {
 	const [scrollText, setScrollText] = useState(false);
 	const songInfo = useSongInfo();
 	const [currentTrack, setCurrentTrack] = useState(null);
+	const [songProgress, setSongProgress] = useState(1000);
+
+
 	const player = usePlayer();
 
     useEffect(() => {
@@ -49,6 +52,27 @@ const MusicPlayer = () => {
 				setScrollText(false);
 			}
 	}, [isPlaying]);
+	
+	useEffect(() => {
+		// Start the timer when the component mounts
+		const timer = setInterval(updateSongProgress, 1000); // Update every 1000ms (1 second)
+	
+		// Clean up the timer when the component unmounts
+		return () => clearInterval(timer);
+	  }, [isPlaying, currentTrack]);
+	  	
+	  console.log("songProgress: " + songProgress + " SongDUration: " + currentTrack?.duration_ms)
+
+	  const updateSongProgress = () => {
+		if (isPlaying && currentTrack) {
+		  if(songProgress > currentTrack?.duration_ms){
+			setSongProgress(1000);
+		  }
+		  else{
+		  	setSongProgress((prevProgress) => prevProgress + 1000); // Add 1000 milliseconds (1 second)
+		  }
+		}
+	  };
 
 	const handlePlayPause = () =>{
 		spotifyApi.getMyCurrentPlaybackState().then((data) =>{
@@ -69,6 +93,17 @@ const MusicPlayer = () => {
 		}, 250),
 		[]
 	);
+	function convertMillisecondsToMinutesAndSeconds(milliseconds) {
+		let seconds = milliseconds / 1000;
+		let minutes = 0;
+		if (seconds >= 60) {
+		  minutes = Math.floor(seconds / 60);
+		  seconds = Math.floor(seconds % 60);
+		}
+	  	const formattedSeconds = seconds.toString().padStart(2, '0');
+	  
+		return `${minutes}:${formattedSeconds}`;
+	  }
 
     return (
 		<>
@@ -91,17 +126,17 @@ const MusicPlayer = () => {
 				</div>
 				{/* song progress */}
 				{/* <div className="place-self-center text-[10px]"> */}
-					{/* <p> 0:00 ------------------------------------------------------------------------------------------- 0:00 </p> */}
+				{convertMillisecondsToMinutesAndSeconds(songProgress)}    <div className="progress-bar"><div className="progress-indicator" style={{ width: `${(songProgress / currentTrack?.duration_ms) * 100}%` }}></div></div> {convertMillisecondsToMinutesAndSeconds(currentTrack?.duration_ms)}
 				{/* </div> */}
 				{/* controls */}
 				<div className="flex place-self-center">
-					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious(); } } />
+					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious(); setSongProgress(1000)}} />
 					
 					{isPlaying?
 					(<PauseIcon alt="Pause" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />) :
 					<PlayIcon alt="Play" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />}
 					
-					<ForwardIcon alt="Next" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToNext(); } } />
+					<ForwardIcon alt="Next" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToNext(); setSongProgress(1000) } } />
 				</div>
 			</div>
 
