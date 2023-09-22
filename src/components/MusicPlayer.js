@@ -2,7 +2,8 @@ import { useSession, getProviders, signOut } from "next-auth/react";
 import { useRecoilState } from 'recoil';
 import { currentTrackIdState, isPlayingState } from "atoms/songAtom";
 import { useCallback, useEffect, useState } from 'react';
-import {debounce} from 'lodash';
+import { debounce } from 'lodash';
+import ProgressBar from 'react-progressbar';
 
 import useSpotify from 'hooks/useSpotify.js';
 import useSongInfo from 'hooks/useSongInfo.js';
@@ -10,100 +11,92 @@ import usePlayer from 'hooks/usePlayer.js';
 
 import { PlayIcon, PauseIcon, ForwardIcon, BackwardIcon } from '@heroicons/react/24/solid';
 
-
 const MusicPlayer = () => {
     const spotifyApi = useSpotify();
+    const [isPlaying, setIsPlaying] = useRecoilState(isPlayingState);
+    const [volume, setVolume] = useState();
+    const [scrollText, setScrollText] = useState(false);
+    const songInfo = useSongInfo();
+    const [currentTrack, setCurrentTrack] = useState(null);
+    const [songProgress, setSongProgress] = useState(0); // Change initial value to 0
 
-	const [isPlaying, setIsPlaying] = useRecoilState(isPlayingState);	
-	const [volume, setVolume] = useState();
-	const [scrollText, setScrollText] = useState(false);
-	const songInfo = useSongInfo();
-	const [currentTrack, setCurrentTrack] = useState(null);
-	const [songProgress, setSongProgress] = useState(1000);
-
-
-	const player = usePlayer();
+    const player = usePlayer();
 
     useEffect(() => {
-		if (player) {
-		  player.addListener("player_state_changed", (state) => {
-			if (state && state.track_window && state.track_window.current_track) {
-			  setCurrentTrack(state.track_window.current_track);
-			  setIsPlaying(!state.paused);
+        if (player) {
+            player.addListener("player_state_changed", (state) => {
+                if (state && state.track_window && state.track_window.current_track) {
+                    setCurrentTrack(state.track_window.current_track);
+                    setIsPlaying(!state.paused);
+                } else {
+                    setCurrentTrack(null);
+                    setIsPlaying(false);
+                }
+            });
+        }
+    }, [player]);
+
+    useEffect(() => {
+        if (volume > 0 && volume < 100) {
+            debouncedAdjustVolume(volume);
+        }
+    }, [volume]);
+
+    useEffect(() => {
+        if (isPlaying) {
+            setScrollText(true);
+        } else {
+            setScrollText(false);
+        }
+    }, [isPlaying]);
+
+    useEffect(() => {
+        const timer = setInterval(updateSongProgress, 1000);
+        return () => clearInterval(timer);
+    }, [isPlaying, currentTrack]);
+
+	const updateSongProgress = () => {
+		if (isPlaying && currentTrack) {
+		  setSongProgress((prevProgress) => {
+			const newProgress = prevProgress + 1000;
+			if (newProgress >= currentTrack?.duration_ms) {
+			  return 0;
 			} else {
-			  setCurrentTrack(null);
-			  setIsPlaying(false);
+			  return newProgress;
 			}
 		  });
 		}
-	  }, [player]);
-
-	useEffect(() => {
-		if (volume > 0 && volume < 100) {
-			debouncedAdjustVolume(volume);
-		}
-	  }, [volume]);
-
-	useEffect(() =>{
-			if (isPlaying) {
-				setScrollText(true);
-			}
-			else {
-				setScrollText(false);
-			}
-	}, [isPlaying]);
-	
-	useEffect(() => {
-		// Start the timer when the component mounts
-		const timer = setInterval(updateSongProgress, 1000); // Update every 1000ms (1 second)
-	
-		// Clean up the timer when the component unmounts
-		return () => clearInterval(timer);
-	  }, [isPlaying, currentTrack]);
-	  	
-	  console.log("songProgress: " + songProgress + " SongDUration: " + currentTrack?.duration_ms)
-
-	  const updateSongProgress = () => {
-		if (isPlaying && currentTrack) {
-		  if(songProgress > currentTrack?.duration_ms){
-			setSongProgress(1000);
-		  }
-		  else{
-		  	setSongProgress((prevProgress) => prevProgress + 1000); // Add 1000 milliseconds (1 second)
-		  }
-		}
 	  };
+    const handlePlayPause = () => {
+        spotifyApi.getMyCurrentPlaybackState().then((data) => {
+            if (data.body?.is_playing) {
+                spotifyApi.pause();
+                setIsPlaying(false);
+            } else {
+                spotifyApi.play();
+                setIsPlaying(true);
+            }
+        });
+    };
 
-	const handlePlayPause = () =>{
-		spotifyApi.getMyCurrentPlaybackState().then((data) =>{
-			if (data.body?.is_playing) {
-				spotifyApi.pause();
-				setIsPlaying(false);
-			}
-			else{
-				spotifyApi.play();
-				setIsPlaying(true);
-			}
-			});
-		};
+    const debouncedAdjustVolume = useCallback(
+        debounce((volume) => {
+            spotifyApi.setVolume(volume);
+        }, 250),
+        []
+    );
 
-	const debouncedAdjustVolume = useCallback(
-		debounce((volume) => {
-			spotifyApi.setVolume(volume);
-		}, 250),
-		[]
-	);
-	function convertMillisecondsToMinutesAndSeconds(milliseconds) {
-		let seconds = milliseconds / 1000;
-		let minutes = 0;
-		if (seconds >= 60) {
-		  minutes = Math.floor(seconds / 60);
-		  seconds = Math.floor(seconds % 60);
-		}
-	  	const formattedSeconds = seconds.toString().padStart(2, '0');
-	  
-		return `${minutes}:${formattedSeconds}`;
-	  }
+    function convertMillisecondsToMinutesAndSeconds(milliseconds) {
+        let seconds = milliseconds / 1000;
+        let minutes = 0;
+        if (seconds >= 60) {
+            minutes = Math.floor(seconds / 60);
+            seconds = Math.floor(seconds % 60);
+        }
+        const formattedSeconds = seconds.toString().padStart(2, '0');
+
+        return `${minutes}:${formattedSeconds}`;
+    }
 
     return (
 		<>
@@ -115,9 +108,8 @@ const MusicPlayer = () => {
 
 			{/* middle/player-stuff */}
 			<div className="flex flex-col place-self-center">
-
 				{/* artist - song_name */}
-				<div className=" place-self-center font-bold text-[20px]" id="scroll-container">
+				<div className="place-self-center font-bold text-[20px]" id="scroll-container">
 					<p id={scrollText ? "scroll-text" : ""}>{currentTrack?.artists?.[0]?.name} - {currentTrack?.name}</p>
 				</div>
 				{/* album_name */}
@@ -125,18 +117,36 @@ const MusicPlayer = () => {
 					<p>{songInfo?.album?.name}</p>
 				</div>
 				{/* song progress */}
-				{/* <div className="place-self-center text-[10px]"> */}
-				{convertMillisecondsToMinutesAndSeconds(songProgress)}    <div className="progress-bar"><div className="progress-indicator" style={{ width: `${(songProgress / currentTrack?.duration_ms) * 100}%` }}></div></div> {convertMillisecondsToMinutesAndSeconds(currentTrack?.duration_ms)}
-				{/* </div> */}
+				<div className="place-self-center">
+					<div className="time-info">
+						<span>{convertMillisecondsToMinutesAndSeconds(songProgress)}</span>
+					</div>
+					{/* <div className="progress-bar-container">
+						<ProgressBar completed={(songProgress / currentTrack?.duration_ms) * 100} bgColor="#1DB954" height="10px" />
+					</div> */}
+                    <div className="flex items-center justify-end">
+                        <input
+                            className="hover:scale-[1.015]"
+                            type="range"
+                            value={(songProgress / currentTrack?.duration_ms) * 100}
+                            //onChange={(e) => setVolume(Number(e.target.value))}
+                            min={0}
+                            max={100}
+                        />
+                    </div>
+					<div className="time-info">
+						<span>{convertMillisecondsToMinutesAndSeconds(currentTrack?.duration_ms)}</span>
+					</div>
+				</div>
 				{/* controls */}
 				<div className="flex place-self-center">
-					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious(); setSongProgress(1000)}} />
-					
-					{isPlaying?
-					(<PauseIcon alt="Pause" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />) :
-					<PlayIcon alt="Play" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />}
-					
-					<ForwardIcon alt="Next" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToNext(); setSongProgress(1000) } } />
+					<BackwardIcon alt="Previous" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToPrevious(); setSongProgress(0) }} />
+					{isPlaying ? (
+						<PauseIcon alt="Pause" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />
+					) : (
+						<PlayIcon alt="Play" className="h-12 w-12 text-white hover:scale-105" onClick={handlePlayPause} />
+					)}
+					<ForwardIcon alt="Next" className="w-8 text-white hover:scale-105" onClick={() => { spotifyApi.skipToNext(); setSongProgress(0) }} />
 				</div>
 			</div>
 
@@ -146,25 +156,24 @@ const MusicPlayer = () => {
 					className="hover:scale-[1.015]"
 					type="range"
 					value={volume}
-					onChange={(e) => setVolume(Number(e.target.value))} 	
-					// step={1}				
+					onChange={(e) => setVolume(Number(e.target.value))}
 					min={0}
-					max={100}/>
-
+					max={100}
+				/>
 			</div>
 		</div>
-		</>
+	</>
     );
 }
 
-export async function getServerSideProps(){
-	const providers = await getProviders();
+export async function getServerSideProps() {
+    const providers = await getProviders();
 
-	return {
-		props: {
-			providers
-		}
-	}
+    return {
+        props: {
+            providers
+        }
+    }
 }
 
 export default MusicPlayer;

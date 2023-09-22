@@ -13,6 +13,7 @@ export default function UserProfile() {
 	const [searchedArtist, setSearchedArtist] = useState(null);
 	const [searchedAlbum, setSearchedAlbum] = useState(null);
 	const [selectedFilter, setSelectedFilter] = useState('All');
+	const [selectedAlbumTracks, setSelectedAlbumTracks] = useState(null);
 
 	const handleInputChange = (event) => {
 		if (event.target.value === null) {
@@ -240,7 +241,7 @@ export default function UserProfile() {
 					<div className="flex flex-col text-center h-56 w-48 mr-28 relative">
 						<div className="h-8 mb-2">
 							<h2 className="text-xs w-48 truncate">{sortedAlbums?.[i]?.artists?.[0]?.name}</h2>
-							<h2 className="text-sm font-semibold w-48 truncate">{sortedAlbums?.[i]?.name}</h2>
+							<h2 className="text-sm font-semibold w-48 truncate" onClick={() => setAlbumTracks(sortedAlbums?.[i]?.id)}>{sortedAlbums?.[i]?.name}</h2>
 						</div>
 
 						<div className="group h-48 w-48 relative hover:bg-transparent hover:scale-[101%]">
@@ -281,6 +282,61 @@ export default function UserProfile() {
 		</>
 		)
 	};
+
+	const setAlbumTracks = (albumId) => {
+		setSelectedAlbumTracks(albumId);
+		setSelectedFilter('Albums Tracks');
+	};
+
+	const displayAlbumTracks = (albumId) => {
+		if(!selectedAlbumTracks){
+			spotifyApi.getAlbumTracks(albumId)
+			.then(function(data) {
+				setSelectedAlbumTracks(data.body);
+			console.log(data.body);
+			}, function(err) {
+			console.log('Something went wrong!', err);
+			});
+	}
+
+		console.log(selectedAlbumTracks)
+
+		// const albumTracks = [];
+		// for (let i = 0; i < amount; i++) {
+		//   const albumTracks = sortedTracks?.[i];
+		//   if (albumTracks?.album?.images[0]?.url) {
+		// 	// topTracks.push(
+		// 	// 	<div className="flex flex-row items-center pb-8" key={i}>
+		// 	// 		<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
+		// 	// 			<img
+		// 	// 				src={track?.album?.images[0]?.url}
+		// 	// 				className="h-32 w-32 rounded-full"
+		// 	// 				alt="Album Cover"
+		// 	// 			/>
+		// 	// 			<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
+		// 	// 				<PlayIcon
+		// 	// 				alt="Play"
+		// 	// 				className="h-12 w-[52px] text-white scale-[75%]"
+		// 	// 				onClick={() => spotifyApi.play({ uris: [track?.uri] })}
+		// 	// 				/>
+		// 	// 			</div>
+		// 	// 		</div>
+		// 	// 		<div className="w-80">
+		// 	// 			<h2 className="text-2xl font-semibold truncate">{track?.name}</h2>
+		// 	// 			<h2 className="text-sm">{track?.album?.artists?.[0]?.name}</h2>
+		// 	// 		</div>
+		// 	// 	</div>
+		// 	// );
+		//   }
+		// }
+
+		return(
+			<>
+			<p>hi</p>
+			</>
+
+		)
+	}
 
 
 	//
@@ -482,6 +538,12 @@ export default function UserProfile() {
 				{displayAlbumsFilter()}
 			  </>
 			);
+		  case 'Albums Tracks': 
+			return(
+				<>
+					{displayAlbumTracks()}
+				</>
+			)
 		  case 'Artists':
 			return (
 			  <>
