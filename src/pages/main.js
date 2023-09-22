@@ -39,7 +39,7 @@ export default function UserProfile({providers}) {
             return(
                 <>
                     {/* searched content */}
-                    <div className='bg-gradient-to-t from-green-400 to-black pb-64'>
+                    <div className='bg-gradient-to-t from-green-400 to-black pb-80'>
                         <SearchContent />
                     </div>
                 </>
@@ -74,7 +74,7 @@ export default function UserProfile({providers}) {
             {currentlyDisplayedPage(currentPage)}
 
 			{/* music player */}
-			<MusicPlayer />
+			<MusicPlayer className="z-50" />
 		</div>
 	</>
 	);

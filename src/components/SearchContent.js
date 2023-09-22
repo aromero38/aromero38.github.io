@@ -15,54 +15,71 @@ export default function UserProfile() {
 	const [selectedFilter, setSelectedFilter] = useState('All');
 
 	const handleInputChange = (event) => {
-		if(event.target.value === null){
+		if (event.target.value === null) {
 			setSearchValue(null);
 		}
 		setSearchValue(event.target.value);
 	};
 
+	useEffect(() => {
+		if (searchValue === null) {
+			console.log(searchValue);
+		}
+		else {
+			fetchSearch();
+		}
+	}, [spotifyApi, session, searchValue]);
+
 	const fetchSearch = () => {
 		if (spotifyApi.getAccessToken()) {
-
 			//get tracks
 			spotifyApi.searchTracks(`track:${searchValue}`)
-			.then(function(data) {
-				setSearchedTrack(data.body)
-				console.log(`Search tracks by ${searchValue}`, data.body);
-			}, function(err) {
-				console.error(err);
-			});
+				.then(function(data) {
+					setSearchedTrack(data.body)
+					console.log(`Search tracks by ${searchValue}`, data.body);
+				}, 
+				function(err) {
+					console.error(err);
+				}
+			);
 
 			//get albums
 			spotifyApi.searchAlbums(`albums:${searchValue}`)
-			.then(function(data) {
-				setSearchedAlbum(data.body)
-				console.log(`Search albums by ${searchValue}`, data.body);
-			}, function(err) {
-				console.error(err);
-			});
+				.then(function(data) {
+					setSearchedAlbum(data.body)
+					console.log(`Search albums by ${searchValue}`, data.body);
+				}, 
+				function(err) {
+					console.error(err);
+				}
+			);
 
 			//get artists
 			spotifyApi.searchArtists(`artist:${searchValue}`)
-			.then(function(data) {
-				setSearchedArtist(data.body)
-				console.log(`Search for artists named ${searchValue}`, data.body);
-			}, function(err) {
-				console.error(err);
-			});
+				.then(function(data) {
+					setSearchedArtist(data.body)
+					console.log(`Search for artists named ${searchValue}`, data.body);
+				}, 
+				function(err) {
+					console.error(err);
+				}
+			);
 		}
 	};
 
+	//
+	// TOP RESULT
+	//
 	const displayTopResult = (searchedTrack) => {
 		const topResult = []
 
 		if (searchedTrack?.tracks?.items?.length > 0) {
 			topResult.push(
-				<div className="w-[80%] h-[100%] group">
+				<div className="w-[80%] h-[100%] group hover:scale-[100.5%]">
 					{/* Hover container */}
-					<div className="relative h-full w-full hover:bg-gradient-to-b from-transparent to-black group-hover:opacity-100 rounded-md border-[0.1px] border-slate-400 z-0">
+					<div className="relative h-full w-full rounded-md border-[1px] z-0">
 						{/* gradient overlay */}
-						<div className="absolute inset-0 rounded-md bg-gradient-to-b from-transparent to-black opacity-95 group-hover:opacity-100 z-10"></div>
+						<div className="absolute inset-0 rounded-md bg-gradient-to-b from-transparent to-black opacity-[0.98] group-hover:opacity-100 z-10"></div>
 						{/* cover */}
 						<img src={searchedTrack?.tracks?.items?.[0]?.album?.images[0]?.url} className="h-full w-full object-cover z-0 rounded-md"></img> 
 						{/* text */}
@@ -93,7 +110,7 @@ export default function UserProfile() {
 			{topResult}
 		</>
 		)
-	}
+	};
 
 	const displayTopArtist = (searchedArtist, amount) => {
 		const topArtists = [];
@@ -101,12 +118,12 @@ export default function UserProfile() {
 			if (searchedArtist?.artists?.items?.[i]?.images?.[0]?.url) {
 				topArtists.push(
 					<div className="flex flex-row items-center pb-8">
-						<div className="pr-4 relative">
+						<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
 							<img src={searchedArtist?.artists?.items?.[i]?.images?.[0]?.url} className="h-32 w-32 rounded-full" alt="Artist" />
-						<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full hover:scale-105">
-						<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: searchedArtist?.artists?.items?.[i]?.uri })}/>
-					</div>
-					</div>
+							<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
+								<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: searchedArtist?.artists?.items?.[i]?.uri })}/>
+							</div>
+						</div>
 						<div className="w-80">
 							<h2 className="text-2xl font-semibold truncate">{searchedArtist?.artists?.items?.[i]?.name}</h2>
 						</div>
@@ -129,6 +146,15 @@ export default function UserProfile() {
 				</div>
 			)
 		}
+		else {
+			topArtists.push(
+				<div className="flex flex-row items-center pb-8">
+					<div className="border border-white rounded-2xl h-8 w-24 hover:scale-[102%]">
+						<button className="pl-[7px] pt-1" onClick={() => setSelectedFilter('Artists')}><h1 className="font-bold">View More</h1></button>
+					</div>
+				</div>
+			)
+		}
 
 		return(
 		<>
@@ -136,7 +162,7 @@ export default function UserProfile() {
 			{topArtists}
 		</>
 		)
-	}
+	};
 
 	const displayTopTracks = (searchedTrack, amount) => {
 		const topTracks = [];
@@ -148,26 +174,26 @@ export default function UserProfile() {
 	
 		  if (track?.album?.images[0]?.url) {
 			topTracks.push(
-			  <div className="flex flex-row items-center pb-8" key={i}>
-				<div className="pr-4 relative">
-				  <img
-					src={track?.album?.images[0]?.url}
-					className="h-32 w-32 rounded-full"
-					alt="Album Cover"
-				  />
-				  <div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full hover:scale-105">
-					<PlayIcon
-					  alt="Play"
-					  className="h-12 w-[52px] text-white scale-[75%]"
-					  onClick={() => spotifyApi.play({ uris: [track?.uri] })}
-					/>
-				  </div>
+				<div className="flex flex-row items-center pb-8" key={i}>
+					<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
+						<img
+							src={track?.album?.images[0]?.url}
+							className="h-32 w-32 rounded-full"
+							alt="Album Cover"
+						/>
+						<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
+							<PlayIcon
+							alt="Play"
+							className="h-12 w-[52px] text-white scale-[75%]"
+							onClick={() => spotifyApi.play({ uris: [track?.uri] })}
+							/>
+						</div>
+					</div>
+					<div className="w-80">
+						<h2 className="text-2xl font-semibold truncate">{track?.name}</h2>
+						<h2 className="text-sm">{track?.album?.artists?.[0]?.name}</h2>
+					</div>
 				</div>
-				<div className="w-80">
-				  <h2 className="text-2xl font-semibold truncate">{track?.name}</h2>
-				  <h2 className="text-sm">{track?.album?.artists?.[0]?.name}</h2>
-				</div>
-			  </div>
 			);
 		  }
 		}
@@ -186,6 +212,15 @@ export default function UserProfile() {
 			</div>
 		  );
 		}
+		else {
+			topTracks.push(
+				<div className="flex flex-row items-center pb-8">
+					<div className="border border-white rounded-2xl h-8 w-24 hover:scale-[102%]">
+						<button className="pl-[7px] pt-1" onClick={() => setSelectedFilter('Tracks')}><h1 className="font-bold">View More</h1></button>
+					</div>
+				</div>
+			)
+		}
 	
 		return (
 		  <>
@@ -193,7 +228,7 @@ export default function UserProfile() {
 			{topTracks}
 		  </>
 		);
-	  };
+	};
 
 	const displayTopAlbums = (searchedAlbum, amount) => {
 		const topAlbums = [];
@@ -207,9 +242,10 @@ export default function UserProfile() {
 							<h2 className="text-xs w-48 truncate">{sortedAlbums?.[i]?.artists?.[0]?.name}</h2>
 							<h2 className="text-sm font-semibold w-48 truncate">{sortedAlbums?.[i]?.name}</h2>
 						</div>
-						<div className="h-48 w-48">
+
+						<div className="group h-48 w-48 relative hover:bg-transparent hover:scale-[101%]">
 							<img src={sortedAlbums?.[i]?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
-							<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full hover:scale-105">
+							<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
 								<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: sortedAlbums?.[i]?.uri })}/>
 							</div>
 						</div>
@@ -222,7 +258,6 @@ export default function UserProfile() {
 			topAlbums.push(
 				<div className="flex flex-col h-48 w-48 border-2 border-white rounded-lg text-center justify-center">
 					<FaceFrownIcon className="w-8 h-8 self-center" />
-
 					<h2 className="text-sm w-48 font-bold">No Results Found</h2>					
 				</div>
 			)
@@ -236,28 +271,30 @@ export default function UserProfile() {
 					<div className="flex flex-row justify-start">
 						{topAlbums}
 					</div>
+					{(topAlbums.length > 1) ?
+						<div className="border border-white rounded-2xl h-8 w-24 mt-8 hover:scale-[102%]">
+							<button className="pl-2 pt-1" onClick={() => setSelectedFilter('Albums')}><h1 className="font-bold">View More</h1></button>
+						</div>
+					: null}
 				</div>
 			</div>
 		</>
 		)
-	}
+	};
 
-	useEffect(() => {
-		if(searchValue === null){
-			console.log(searchValue);
-		}
-		else{
-			fetchSearch();
-		}
-	}, [spotifyApi, session, searchValue]);
 
-	const displayAllFilter = () =>{
+	//
+	// FILTERED RESULTS
+	//
+	const displayAllFilter = () => {
 		return(	<>
 			{/* search content */}
 			{searchedTrack != null && searchedArtist != null ? 
 				<div className="w-100% h-[1100px] mt-20 mx-20 text-white relative mb-20">
+					<div className="text-white relative mb-20">
+					</div>
 					{/* top / artists / tracks */}
-					<div className="flex flex-row h-3/4 justify-center mb-20">
+					<div className="flex flex-row h-3/4 justify-center mb-32">
 						<div className="flex flex-col w-1/3">
 							{displayTopResult(searchedTrack)}
 						</div>
@@ -278,7 +315,7 @@ export default function UserProfile() {
 				: <div className="h-[575px]"></div>
 			}
 		</>)
-	}
+	};
 
 	const displayAlbumsFilter = () => {
 		// Ensure searchedTrack exists and has tracks
@@ -297,15 +334,15 @@ export default function UserProfile() {
 		for (let i = 0; i < albums.length; i += albumsPerRow) {
 		  const row = albums.slice(i, i + albumsPerRow);
 		  const albumsRow = row.map((album, index) => (
-			<div className="flex flex-col text-center h-56 w-48 mr-28 relative">
+			<div className="flex flex-col text-center h-56 w-48 mr-28 relative mb-20">
 				<div className="h-8 mb-2">
 					<h2 className="text-xs w-48 truncate">{album?.artists?.[0]?.name}</h2>
 					<h2 className="text-sm font-semibold w-48 truncate">{album?.name}</h2>
 				</div>
-				<div className="h-48 w-48">
-					<img src={album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2"></img>
-					<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full hover:scale-105">
-						<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: album?.uri })}/>
+				<div className="group h-48 w-48 relative hover:bg-transparent hover:scale-[101%]">
+					<img src={album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2" />
+					<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
+						<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: album?.uri })} />
 					</div>
 				</div>
 			</div>
@@ -319,11 +356,16 @@ export default function UserProfile() {
 		}
 	  
 		return (
-		  <div className="w-100% h-[1100px] mt-20 mx-20 text-white relative mb-20">
+		  <div className="w-100% h-[1100px] mt-4 mx-20 text-white relative mb-20">
+			<div className="text-white relative mb-16">
+				<div className="border border-white rounded-2xl h-8 w-24 mt-8 hover:scale-[102%]">	
+					<button className="pl-4 pt-1" onClick={() => setSelectedFilter('All')}><h1 className="font-bold">Go Back</h1></button>
+				</div>
+			</div>
 			{rows}
 		  </div>
 		);
-	  };
+	};
 
 	const displayArtistsFilter = () => {
 		// Ensure searchedTrack exists and has tracks
@@ -336,23 +378,23 @@ export default function UserProfile() {
 		const artists = searchedArtist.artists.items;
 	  
 		const rows = [];
-		const artistsPerRow = 4;
+		const artistsPerRow = 3;
 	  
 		// Divide tracks into rows
 		for (let i = 0; i < artists.length; i += artistsPerRow) {
-		  const row = artists.slice(i, i + artistsPerRow);
-		  const artistRow = row.map((artist, index) => (
-			<div className="flex flex-row items-center pb-8">
-			<div className="pr-4 relative">
-				<img src={artist?.images?.[0]?.url} className="h-32 w-32 rounded-full" alt="Artist" />
-			<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full hover:scale-105">
-			<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: artist?.uri })}/>
-		</div>
-		</div>
-			<div className="w-80">
-				<h2 className="text-2xl font-semibold truncate">{artist?.name}</h2>
-			</div>
-		</div>
+			const row = artists.slice(i, i + artistsPerRow);
+			const artistRow = row.map((artist, index) => (
+				<div className="flex flex-row items-center pb-12">
+					<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
+						<img src={artist?.images?.[0]?.url} className="h-32 w-32 rounded-full" alt="Artist" />
+						<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
+							<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: artist?.uri })}/>
+						</div>
+					</div>
+					<div className="w-80 mr-20">
+						<h2 className="text-2xl font-semibold truncate">{artist?.name}</h2>
+					</div>
+				</div>
 		  ));
 	  
 		  rows.push(
@@ -363,11 +405,16 @@ export default function UserProfile() {
 		}
 	  
 		return (
-		  <div className="w-100% h-[1100px] mt-20 mx-20 text-white relative mb-20">
-			{rows}
-		  </div>
+			<div className="w-100% h-[1100px] mt-4 mx-20 text-white relative mb-20">
+				<div className="text-white relative mb-16">
+					<div className="border border-white rounded-2xl h-8 w-24 mt-8 hover:scale-[102%]">	
+						<button className="pl-4 pt-1" onClick={() => setSelectedFilter('All')}><h1 className="font-bold">Go Back</h1></button>
+					</div>
+				</div>
+				{rows}
+			</div>
 		);
-	  };
+	};
 
 	const displayTracksFilter = () => {
 		// Ensure searchedTrack exists and has tracks
@@ -380,47 +427,52 @@ export default function UserProfile() {
 		const tracks = searchedTrack.tracks.items;
 	  
 		const rows = [];
-		const tracksPerRow = 3;
-	  
+		const tracksPerRow = 2;
+
 		// Divide tracks into rows
 		for (let i = 0; i < tracks.length; i += tracksPerRow) {
-		  const row = tracks.slice(i, i + tracksPerRow);
-		  const trackRow = row.map((track, index) => (
-			<div className="flex flex-row items-center pb-8" key={track.id}>
-			  <div className="pr-4 relative">
-				<img
-				  src={track.album.images[0]?.url}
-				  className="h-32 w-32 rounded-full"
-				  alt="Album Cover"
-				/>
-				<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full hover:scale-105">
-				  <PlayIcon
-					alt="Play"
-					className="h-12 w-[52px] text-white scale-[75%]"
-					onClick={() => spotifyApi.play({ uris: [track.uri] })}
-				  />
+			const row = tracks.slice(i, i + tracksPerRow);
+			const trackRow = row.map((track, index) => (
+				<div className="flex flex-row items-center pb-12" key={track.id}>
+				<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
+					<img
+						src={track.album.images[0]?.url}
+						className="h-32 w-32 rounded-full"
+						alt="Album Cover"
+					/>
+					<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
+					<PlayIcon
+						alt="Play"
+						className="h-12 w-[52px] text-white scale-[75%]"
+						onClick={() => spotifyApi.play({ uris: [track.uri] })}
+					/>
+					</div>
 				</div>
-			  </div>
-			  <div className="w-80">
-				<h2 className="text-2xl font-semibold truncate">{track.name}</h2>
-				<h2 className="text-sm">{track.album.artists[0]?.name}</h2>
-			  </div>
-			</div>
-		  ));
-	  
-		  rows.push(
-			<div className="flex flex-row items-start" key={`track-row-${i}`}>
-			  {trackRow}
-			</div>
-		  );
+				<div className="w-[575px] mr-32">
+					<h2 className="text-2xl font-semibold truncate">{track.name}</h2>
+					<h2 className="text-sm">{track.album.artists[0]?.name}</h2>
+				</div>
+				</div>
+			));
+		
+			rows.push(
+				<div className="flex flex-row items-start" key={`track-row-${i}`}>
+				{trackRow}
+				</div>
+			);
 		}
 	  
 		return (
-		  <div className="w-100% h-[1100px] mt-20 mx-20 text-white relative mb-20">
-			{rows}
-		  </div>
+			<div className="w-100% h-[1600px] mt-4 mx-20 text-white relative mb-20">
+				<div className="text-white relative mb-16">
+					<div className="border border-white rounded-2xl h-8 w-24 mt-8 hover:scale-[102%]">	
+						<button className="pl-4 pt-1" onClick={() => setSelectedFilter('All')}><h1 className="font-bold">Go Back</h1></button>
+					</div>
+				</div>
+				{rows}
+			</div>
 		);
-	  };
+	};
 
 	const filterContent = () => {
 		switch (selectedFilter) {
@@ -449,8 +501,12 @@ export default function UserProfile() {
 				</>
 			  );
 		}
-	  };
+	};
 
+
+	//
+	// MAIN
+	//
 	return (
 		<>
 			{/* search bar */}
@@ -467,13 +523,6 @@ export default function UserProfile() {
 							className="text-sm pl-10 py-2 px-3 placeholder-slate-600 ring-slate-800 rounded-lg bg-gradient-to-r from-black to-gray-900 dark:ring-2 dark:text-slate-300 focus:ring-green-900 focus:outline-none" />
 						</div>
 				</div>
-			</div>
-
-			<div className="text-white relative mb-20">
-				<button onClick={() => setSelectedFilter('All')}>All</button>
-				<button onClick={() => setSelectedFilter('Albums')}>Albums</button>
-				<button onClick={() => setSelectedFilter('Artists')}>Artists</button>
-				<button onClick={() => setSelectedFilter('Tracks')}>Tracks</button>
 			</div>
 			
 			<div>
