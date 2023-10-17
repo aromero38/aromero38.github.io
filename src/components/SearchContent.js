@@ -9,11 +9,12 @@ export default function UserProfile() {
 	const {data: session} = useSession();
 	const spotifyApi = useSpotify();
 	const [searchValue, setSearchValue] = useState('');
-	const [searchedTrack, setSearchedTrack] = useState(null);
-	const [searchedArtist, setSearchedArtist] = useState(null);
-	const [searchedAlbum, setSearchedAlbum] = useState(null);
+	const [searchedTrack, setSearchedTrack] = useState('');
+	const [searchedArtist, setSearchedArtist] = useState('');
+	const [searchedAlbum, setSearchedAlbum] = useState('');
 	const [selectedFilter, setSelectedFilter] = useState('All');
-	const [selectedAlbumTracks, setSelectedAlbumTracks] = useState(null);
+	const [selectedAlbumTracks, setSelectedAlbumTracks] = useState('');
+	const [albumId, setAlbumId] = useState('');
 
 	const handleInputChange = (event) => {
 		if (event.target.value === null) {
@@ -73,8 +74,9 @@ export default function UserProfile() {
 	//
 	const displayTopResult = (searchedTrack) => {
 		const topResult = []
-
+		
 		if (searchedTrack?.tracks?.items?.length > 0) {
+			let albumId = searchedTrack?.tracks?.items?.[0]?.album?.id;
 			topResult.push(
 				<div className="w-[80%] h-[100%] group hover:scale-[100.5%]">
 					{/* Hover container */}
@@ -85,7 +87,7 @@ export default function UserProfile() {
 						<img src={searchedTrack?.tracks?.items?.[0]?.album?.images[0]?.url} className="h-full w-full object-cover z-0 rounded-md"></img> 
 						{/* text */}
 						<div className="absolute bottom-[20px] left-2 px-4 text-white text-2xl font-bold opacity-100 group-hover:opacity-100 z-30 w-[75%]">
-							<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[0]?.album?.name}</h2>
+							<h2 className="text-2xl font-semibold" onClick={() => setAlbumTracks(searchedTrack?.tracks?.items?.[0]?.album?.id)}>{searchedTrack?.tracks?.items?.[0]?.album?.name}</h2>
 							<h2 className="text-sm font-semibold">{searchedTrack?.tracks?.items?.[0]?.album?.artists?.[0]?.name}</h2>
 						</div>
 						{/* play btn */}
@@ -97,6 +99,7 @@ export default function UserProfile() {
 					</div>
 				</div>
 			)
+			console.log(searchedTrack?.tracks?.items?.[0]?.album?.id)
 		}
 		else {
 			topResult.push(
@@ -167,8 +170,8 @@ export default function UserProfile() {
 
 	const displayTopTracks = (searchedTrack, amount) => {
 		const topTracks = [];
-		let sortedTracks = searchedTrack.tracks.items;
-		sortedTracks.sort((a, b) => b.popularity - a.popularity);
+		let sortedTracks = searchedTrack?.tracks?.items;
+		sortedTracks?.sort((a, b) => b.popularity - a.popularity);
 	
 		for (let i = 0; i < amount; i++) {
 		  const track = sortedTracks?.[i];
@@ -233,8 +236,8 @@ export default function UserProfile() {
 
 	const displayTopAlbums = (searchedAlbum, amount) => {
 		const topAlbums = [];
-		let sortedAlbums = searchedAlbum.albums.items;
-		sortedAlbums.sort((a, b) => b.popularity - a.popularity);
+		let sortedAlbums = searchedAlbum?.albums?.items;
+		sortedAlbums?.sort((a, b) => b.popularity - a.popularity);
 		for (let i = 1; i < amount; i++) {
 			if (sortedAlbums?.[i]?.artists?.[0]?.name) {
 				topAlbums.push(
@@ -284,60 +287,62 @@ export default function UserProfile() {
 	};
 
 	const setAlbumTracks = (albumId) => {
-		setSelectedAlbumTracks(albumId);
+		setAlbumId(albumId);
 		setSelectedFilter('Albums Tracks');
 	};
 
 	const displayAlbumTracks = (albumId) => {
-		if(!selectedAlbumTracks){
-			spotifyApi.getAlbumTracks(albumId)
-			.then(function(data) {
-				setSelectedAlbumTracks(data.body);
-			console.log(data.body);
-			}, function(err) {
-			console.log('Something went wrong!', err);
-			});
-	}
+		spotifyApi.getAlbum(albumId)
+		.then(function(data) {
+			setSelectedAlbumTracks(data.body);
+		console.log(data.body);
+		}, function(err) {
+		console.log('Something went wrong!', err);
+		});
 
-		console.log(selectedAlbumTracks)
+		const albumTracks = [];
+		albumTracks.push(
+		<>
+		<div className="text-5xl font-bold text-white">{selectedAlbumTracks?.name}.</div><h2 className="text-xl font-bold text-white">{selectedAlbumTracks?.artists?.[0]?.name}</h2></>)
 
-		// const albumTracks = [];
-		// for (let i = 0; i < amount; i++) {
-		//   const albumTracks = sortedTracks?.[i];
-		//   if (albumTracks?.album?.images[0]?.url) {
-		// 	// topTracks.push(
-		// 	// 	<div className="flex flex-row items-center pb-8" key={i}>
-		// 	// 		<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
-		// 	// 			<img
-		// 	// 				src={track?.album?.images[0]?.url}
-		// 	// 				className="h-32 w-32 rounded-full"
-		// 	// 				alt="Album Cover"
-		// 	// 			/>
-		// 	// 			<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
-		// 	// 				<PlayIcon
-		// 	// 				alt="Play"
-		// 	// 				className="h-12 w-[52px] text-white scale-[75%]"
-		// 	// 				onClick={() => spotifyApi.play({ uris: [track?.uri] })}
-		// 	// 				/>
-		// 	// 			</div>
-		// 	// 		</div>
-		// 	// 		<div className="w-80">
-		// 	// 			<h2 className="text-2xl font-semibold truncate">{track?.name}</h2>
-		// 	// 			<h2 className="text-sm">{track?.album?.artists?.[0]?.name}</h2>
-		// 	// 		</div>
-		// 	// 	</div>
-		// 	// );
-		//   }
-		// }
+		 for (let i = 0; i < selectedAlbumTracks?.tracks?.items?.length; i++) {
+			albumTracks.push(
+				<div className="flex flex-row items-center pb-8 text-white" key={i}>
+					<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
+						<img
+							src={selectedAlbumTracks?.images[0]?.url}
+							className="h-32 w-32 rounded-full"
+							alt="Album Cover"
+						/>
+						<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
+							<PlayIcon
+							alt="Play"
+							className="h-12 w-[52px] text-white scale-[75%]"
+							//onClick={() => spotifyApi.play({ uris: [track?.uri] })}
+							/>
+						</div>
+					</div>
+					<div className="w-80">
+						<h2 className="text-2xl font-semibold truncate">{selectedAlbumTracks?.tracks?.items?.[i]?.name}</h2>
+						<h2 className="text-sm">{selectedAlbumTracks?.tracks?.items?.[0]?.artists?.[0]?.name}</h2>
+					</div>
+				</div>
+			);
+		}
+	
 
 		return(
-			<>
-			<p>hi</p>
-			</>
+			<div className="w-100% h-[1100px] mt-4 mx-20 text-white relative mb-20">
+			<div className="text-white relative mb-16">
+				<div className="border border-white rounded-2xl h-8 w-24 mt-8 hover:scale-[102%]">	
+					<button className="pl-4 pt-1" onClick={() => setSelectedFilter('All')}><h1 className="font-bold">Go Back</h1></button>
+				</div>
+			</div>
+			{albumTracks}
+		  </div>
 
 		)
 	}
-
 
 	//
 	// FILTERED RESULTS
@@ -541,7 +546,7 @@ export default function UserProfile() {
 		  case 'Albums Tracks': 
 			return(
 				<>
-					{displayAlbumTracks()}
+					{displayAlbumTracks(albumId)}
 				</>
 			)
 		  case 'Artists':
