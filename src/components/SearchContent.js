@@ -75,9 +75,21 @@ export default function UserProfile() {
 		const topResult = []
 		
 		if (searchedTrack?.tracks?.items?.length > 0) {
-			let albumId = searchedTrack?.tracks?.items?.[0]?.album?.id;
 			topResult.push(
-				<div className="w-[80%] h-[100%] group hover:scale-[100.5%]">
+				<div 
+					className="w-[80%] h-[100%] group hover:scale-[100.5%]" 
+					onClick={() => {
+						spotifyApi.getAlbum(searchedTrack?.tracks?.items?.[0]?.album?.id)
+							.then(function(data) {
+								setSelectedAlbum(data.body)
+								console.log(`Selected album: ${data?.body?.name}`, data.body);
+							}, 
+							function(err) {
+								console.error(err);
+							}
+						);
+						setSelectedFilter('Albums Tracks')
+					}}>
 					{/* Hover container */}
 					<div className="relative h-full w-full rounded-md border-[1px] z-0">
 						{/* gradient overlay */}
@@ -86,7 +98,7 @@ export default function UserProfile() {
 						<img src={searchedTrack?.tracks?.items?.[0]?.album?.images[0]?.url} className="h-full w-full object-cover z-0 rounded-md"></img> 
 						{/* text */}
 						<div className="absolute bottom-[20px] left-2 px-4 text-white text-2xl font-bold opacity-100 group-hover:opacity-100 z-30 w-[75%]">
-							<h2 className="text-2xl font-semibold" onClick={() => setAlbumTracks(searchedTrack?.tracks?.items?.[0]?.album?.id)}>{searchedTrack?.tracks?.items?.[0]?.album?.name}</h2>
+							<h2 className="text-2xl font-semibold">{searchedTrack?.tracks?.items?.[0]?.album?.name}</h2>
 							<h2 className="text-sm font-semibold">{searchedTrack?.tracks?.items?.[0]?.album?.artists?.[0]?.name}</h2>
 						</div>
 						{/* play btn */}
@@ -98,7 +110,6 @@ export default function UserProfile() {
 					</div>
 				</div>
 			)
-			console.log(searchedTrack?.tracks?.items?.[0]?.album?.id)
 		}
 		else {
 			topResult.push(
@@ -177,7 +188,23 @@ export default function UserProfile() {
 	
 		  if (track?.album?.images[0]?.url) {
 			topTracks.push(
-				<div className="flex flex-row items-center pb-8" key={i}>
+				<div 
+					className="flex flex-row items-center pb-8" 
+					key={i}
+
+					onClick={() => {
+						spotifyApi.getAlbum(searchedTrack?.tracks?.items?.[i]?.album?.id)
+							.then(function(data) {
+								setSelectedAlbum(data.body)
+								console.log(`Selected album: ${data?.body?.name}`, data.body);
+							}, 
+							function(err) {
+								console.error(err);
+							}
+						);
+						setSelectedFilter('Albums Tracks')
+					}}
+				>
 					<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
 						<img
 							src={track?.album?.images[0]?.url}
@@ -300,6 +327,9 @@ export default function UserProfile() {
 		)
 	};
 
+	//
+	// ALBUM / ARTIST PAGES
+	//
 	const displayAlbumTracks = () => {
 		const albumTracks = []
 		const pageLength = `w-100% h-[${Math.round(76 * selectedAlbum?.tracks?.items?.length)}px] mt-4 mx-20 text-white relative mb-20`
@@ -307,12 +337,13 @@ export default function UserProfile() {
 		for (let i = 0; i < selectedAlbum?.tracks?.items?.length; i++) {
 			albumTracks.push(
 				<>
-				<div className="flex flex-row">
+				<div className="flex flex-row group">
 					<div>
-						<h1 className="opacity-[50%] pr-4">{i + 1}</h1>
-					</div>
-					<div>
-
+						<h1 className="opacity-[50%] pr-4 group-hover:hidden">{i + 1}</h1>
+						<PlayIcon 
+							alt="Play" 
+							className="text-white hidden group-hover:block h-6 w-6 mr-2" 
+							onClick={() => spotifyApi.play({ context_uri: selectedAlbum?.tracks?.items?.[i]?.uri })}/>
 					</div>
 					<h2 className="text-xl font-semibold truncate">{selectedAlbum?.tracks?.items?.[i]?.name}</h2>
 				</div>
@@ -404,7 +435,22 @@ export default function UserProfile() {
 					<h2 className="text-sm font-semibold w-48 truncate">{album?.name}</h2>
 				</div>
 				<div className="group h-48 w-48 relative hover:bg-transparent hover:scale-[101%]">
-					<img src={album?.images[0]?.url} className="h-48 w-48 rounded-md mb-2" />
+					<img 
+						src={album?.images[0]?.url} 
+						className="h-48 w-48 rounded-md mb-2"
+						onClick={() => {
+							spotifyApi.getAlbum(album?.id)
+								.then(function(data) {
+									setSelectedAlbum(data.body)
+									console.log(`Selected album: ${data?.body?.name}`, data.body);
+								}, 
+								function(err) {
+									console.error(err);
+								}
+							);
+							setSelectedFilter('Albums Tracks')
+						}} 
+					/>
 					<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
 						<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: album?.uri })} />
 					</div>
