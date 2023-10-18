@@ -543,31 +543,45 @@ export default function UserProfile() {
 		for (let i = 0; i < tracks.length; i += tracksPerRow) {
 			const row = tracks.slice(i, i + tracksPerRow);
 			const trackRow = row.map((track, index) => (
-				<div className="flex flex-row items-center pb-12" key={track.id}>
-				<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
-					<img
-						src={track.album.images[0]?.url}
-						className="h-32 w-32 rounded-full"
-						alt="Album Cover"
-					/>
-					<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
-					<PlayIcon
-						alt="Play"
-						className="h-12 w-[52px] text-white scale-[75%]"
-						onClick={() => spotifyApi.play({ uris: [track.uri] })}
-					/>
+				<div 
+					className="flex flex-row items-center pb-12" 
+					key={track.id}
+					onClick={() => {
+						spotifyApi.getAlbum(searchedTrack?.tracks?.items?.[i]?.album?.id)
+							.then(function(data) {
+								setSelectedAlbum(data.body)
+								console.log(`Selected album: ${data?.body?.name}`, data.body);
+							}, 
+							function(err) {
+								console.error(err);
+							}
+						);
+						setSelectedFilter('Albums Tracks')
+					}}>
+					<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
+						<img
+							src={track.album.images[0]?.url}
+							className="h-32 w-32 rounded-full"
+							alt="Album Cover"
+						/>
+						<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
+						<PlayIcon
+							alt="Play"
+							className="h-12 w-[52px] text-white scale-[75%]"
+							onClick={() => spotifyApi.play({ uris: [track.uri] })}
+						/>
+						</div>
 					</div>
-				</div>
-				<div className="w-[575px] mr-32">
-					<h2 className="text-2xl font-semibold truncate">{track.name}</h2>
-					<h2 className="text-sm">{track.album.artists[0]?.name}</h2>
-				</div>
+					<div className="w-[575px] mr-32">
+						<h2 className="text-2xl font-semibold truncate">{track.name}</h2>
+						<h2 className="text-sm">{track.album.artists[0]?.name}</h2>
+					</div>
 				</div>
 			));
 		
 			rows.push(
 				<div className="flex flex-row items-start" key={`track-row-${i}`}>
-				{trackRow}
+					{trackRow}
 				</div>
 			);
 		}
