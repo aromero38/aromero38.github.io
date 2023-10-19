@@ -66,7 +66,8 @@ export default function UserProfile({providers}) {
                     <div className='text-white p-5 font-bold order-end'>
                         {/* <Link href="/search-page" className="pr-4">search</Link> */}
                         <button className="pr-4" onClick={() => setCurrentPage("Search")}>search</button>
-                        <button onClick={() => signOut({ callbackUrl: 'http://localhost:3000/' })}>sign out</button>
+                        {/* <button onClick={() => signOut({ callbackUrl: 'http://localhost:3000/' })}>sign out</button> */}
+                        <button onClick={() => signOut({ callbackUrl: process.env.NEXTAUTH_URL })}>sign out</button>
                     </div>
                 </div>
             </div>
