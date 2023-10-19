@@ -14,6 +14,9 @@ export default function UserProfile() {
 	const [searchedAlbum, setSearchedAlbum] = useState('');
 	const [selectedFilter, setSelectedFilter] = useState('All');
 	const [selectedAlbum, setSelectedAlbum] = useState({});
+	const [selectedArtist, setSelectedArtist] = useState('');
+	const [selectedArtistInfo, setSelectedArtistInfo] = useState({});
+	const [selectedArtistAlbums, setSelectedArtistAlbums] = useState({});
 
 	const handleInputChange = (event) => {
 		if (event.target.value === null) {
@@ -88,7 +91,7 @@ export default function UserProfile() {
 								console.error(err);
 							}
 						);
-						setSelectedFilter('Albums Tracks')
+						setSelectedFilter('Album Information')
 					}}>
 					{/* Hover container */}
 					<div className="relative h-full w-full rounded-md border-[1px] z-0">
@@ -133,7 +136,13 @@ export default function UserProfile() {
 				topArtists.push(
 					<div className="flex flex-row items-center pb-8">
 						<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
-							<img src={searchedArtist?.artists?.items?.[i]?.images?.[0]?.url} className="h-32 w-32 rounded-full" alt="Artist" />
+							<img src={searchedArtist?.artists?.items?.[i]?.images?.[0]?.url} 
+								 className="h-32 w-32 rounded-full" 
+								 alt="Artist"
+								 onClick={() => {
+									setSelectedArtist(searchedArtist?.artists?.items?.[i]?.id);
+									setSelectedFilter('Artist Information')
+								}}  />
 							<div className="absolute -bottom-0.5 -left-0.5 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
 								<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: searchedArtist?.artists?.items?.[i]?.uri })}/>
 							</div>
@@ -202,7 +211,7 @@ export default function UserProfile() {
 								console.error(err);
 							}
 						);
-						setSelectedFilter('Albums Tracks')
+						setSelectedFilter('Album Information')
 					}}
 				>
 					<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
@@ -287,7 +296,7 @@ export default function UserProfile() {
 											console.error(err);
 										}
 									);
-									setSelectedFilter('Albums Tracks')
+									setSelectedFilter('Album Information')
 								}}>
 							</img>
 							<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
@@ -330,10 +339,10 @@ export default function UserProfile() {
 	//
 	// ALBUM / ARTIST PAGES
 	//
-	const displayAlbumTracks = () => {
+	const displayAlbumInformation= () => {
 		const albumTracks = []
 		const pageLength = `w-100% h-[${Math.round(76 * selectedAlbum?.tracks?.items?.length)}px] mt-4 mx-20 text-white relative mb-20`
-
+		console.log(selectedAlbum);
 		for (let i = 0; i < selectedAlbum?.tracks?.items?.length; i++) {
 			albumTracks.push(
 				<>
@@ -343,7 +352,7 @@ export default function UserProfile() {
 						<PlayIcon 
 							alt="Play" 
 							className="text-white hidden group-hover:block h-6 w-6 mr-2" 
-							onClick={() => spotifyApi.play({ context_uri: selectedAlbum?.tracks?.items?.[i]?.uri })}/>
+							onClick={() => spotifyApi.play({ uris: [selectedAlbum?.tracks?.items?.[i]?.uri] })}/>
 					</div>
 					<h2 className="text-xl font-semibold truncate">{selectedAlbum?.tracks?.items?.[i]?.name}</h2>
 				</div>
@@ -373,6 +382,98 @@ export default function UserProfile() {
 						{albumTracks}
 					</div>
 				</div>
+			</div>
+			</>
+		)
+	}
+
+		//
+	// ALBUM / ARTIST PAGES
+	//
+	const displayArtistInformation =  () => {
+		
+		//Get artists information
+		 spotifyApi.getArtist(selectedArtist)
+		.then(function(data) {
+			
+			setSelectedArtistInfo(data.body);
+		}, function(err) {
+			console.error(err);
+		});
+
+		spotifyApi.getArtistAlbums(selectedArtist)
+		.then(function(data) {
+			//console.log('Artist albums', data.body);
+			setSelectedArtistAlbums(data.body);
+		}, function(err) {
+			console.error(err);
+		});
+
+		const options = {
+			style: 'decimal', // You can also use 'currency' or 'percent'
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0,
+		}
+		let totalFollowers = selectedArtistInfo?.followers?.total;
+		let formattedTotalFollowers = totalFollowers ? totalFollowers.toLocaleString('en-US', options) : '';
+
+				
+		const pageLength = `w-100% h-[${Math.round(76 * selectedAlbum?.tracks?.items?.length)}px] mt-4 mx-20 text-white relative mb-20`
+
+		let artistAlbums = [];
+		for (let i = 1; i < selectedArtistAlbums?.items?.length; i++) {
+			if(selectedArtistAlbums?.items?.[i]?.album_type == "album"){
+					artistAlbums.push(
+						<div className="flex flex-col text-center h-56 w-48 mr-28 relative">
+							<div className="h-8 mb-2">
+								<h2 className="text-xs w-48 truncate">{selectedArtistAlbums?.items?.[i]?.artists?.[0]?.name}</h2>
+								<h2 className="text-sm font-semibold w-48 truncate" >{selectedArtistAlbums?.items?.[i]?.name}</h2>
+							</div>
+
+							<div className="group h-48 w-48 relative hover:bg-transparent hover:scale-[101%]">
+								<img 
+									src={selectedArtistAlbums?.items?.[i]?.images[0]?.url} 
+									className="h-48 w-48 rounded-md mb-2"
+									// onClick={() => {
+									// 	spotifyApi.getAlbum(selectedArtistAlbums?.items?.[i]?.id)
+									// 		.then(function(data) {
+									// 			setSelectedAlbum(data.body)
+									// 			console.log(`Selected album: ${data?.body?.name}`, data.body);
+									// 		}, 
+									// 		function(err) {
+									// 			console.error(err);
+									// 		}
+									// 	);
+									// 	setSelectedFilter('Album Information')
+									// }} 
+									>
+								</img>
+								<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
+									<PlayIcon alt="Play" className="h-12 w-[52px] text-white scale-[75%]" onClick={() => spotifyApi.play({ context_uri: selectedArtistAlbums?.items?.[i]?.uri })}/>
+								</div>
+							</div>
+						</div>
+					)
+				}
+			}
+
+	
+		return (
+			<>
+			<div className={pageLength}>
+			<div className="text-white relative mb-16">
+				<div className="border border-white rounded-2xl h-8 w-24 mt-8 hover:scale-[102%]">	
+					<button className="pl-4 pt-1" onClick={() => setSelectedFilter('All')}><h1 className="font-bold">Go Back</h1></button>
+				</div>
+			</div>
+				<img src={selectedArtistInfo?.images?.[0]?.url} className="h-32 w-32 rounded-full" alt="Artist" />
+				<div className="text-5xl font-bold text-white">
+					{selectedArtistInfo?.name}
+				</div>
+				<h2 className="text-xl font-bold text-white">
+					Followers: {formattedTotalFollowers}
+				</h2>
+				{artistAlbums}
 			</div>
 			</>
 		)
@@ -448,7 +549,7 @@ export default function UserProfile() {
 									console.error(err);
 								}
 							);
-							setSelectedFilter('Albums Tracks')
+							setSelectedFilter('Album Information')
 						}} 
 					/>
 					<div className="absolute bottom-2 left-2 h-12 w-12 bg-green-900 rounded-full opacity-0 group-hover:opacity-100 hover:scale-105">
@@ -556,7 +657,7 @@ export default function UserProfile() {
 								console.error(err);
 							}
 						);
-						setSelectedFilter('Albums Tracks')
+						setSelectedFilter('Album Information')
 					}}>
 					<div className="pr-4 group relative hover:bg-transparent hover:scale-[101%]">
 						<img
@@ -606,10 +707,16 @@ export default function UserProfile() {
 				{displayAlbumsFilter()}
 			  </>
 			);
-		  case 'Albums Tracks': 
+		  case 'Album Information': 
 			return(
 				<>
-					{displayAlbumTracks()}
+					{displayAlbumInformation()}
+				</>
+			)
+			case 'Artist Information': 
+			return(
+				<>
+					{displayArtistInformation()}
 				</>
 			)
 		  case 'Artists':

@@ -104,13 +104,16 @@ const MusicPlayer = () => {
 			{/* left/album-picture */}
 			<div className="flex items-center px-4 ">
 				<img className='h-28 w-28 rounded-[12px] object-center shadow-2xl hover:scale-[1.025]' src={currentTrack?.album?.images?.[0]?.url} />
+                {currentTrack?.artists?.[0]?.name}
+                <br/>
+                {currentTrack?.name}
 			</div>
 
 			{/* middle/player-stuff */}
 			<div className="flex flex-col place-self-center">
 				{/* artist - song_name */}
 				<div className="place-self-center font-bold text-[20px]" id="scroll-container">
-					<p id={scrollText ? "scroll-text" : ""}>{currentTrack?.artists?.[0]?.name} - {currentTrack?.name}</p>
+					{/* <p id={scrollText ? "scroll-text" : ""}>{currentTrack?.artists?.[0]?.name} - {currentTrack?.name}</p> */}
 				</div>
 				{/* album_name */}
 				<div className="place-self-center text-[15px]">
