@@ -307,8 +307,9 @@ export default function UserProfile() {
 			if (sortedAlbums?.[i]?.artists?.[0]?.name) {
 				topAlbums.push(
 					<div className="flex flex-col text-center h-56 w-48 mr-28 relative">
-						<div className="h-8 mb-2">
+						<div className="h-12 mb-2">
 							<h2 className="text-xs w-48 truncate">{sortedAlbums?.[i]?.artists?.[0]?.name}</h2>
+							<h2 className="text-xs w-48 truncate">{sortedAlbums?.[i]?.artists?.[1]?.name}</h2>
 							<h2 className="text-sm font-semibold w-48 truncate" >{sortedAlbums?.[i]?.name}</h2>
 						</div>
 
@@ -404,7 +405,7 @@ export default function UserProfile() {
 						<img className="rounded-lg mb-4" src={selectedAlbum?.images?.[0]?.url}></img>
 						<h2 className="text-4xl font-bold text-white">{selectedAlbum?.name}</h2>
 						<h2 className="text-lg font-bold text-white">{selectedAlbum?.artists?.[0]?.name}</h2>
-
+						<h2 className="text-lg font-bold text-white">{selectedAlbum?.artists?.[1]?.name}</h2>
 						<h2 className="text-md font-bold text-white opacity-[35%] pt-4">Released: {selectedAlbum?.release_date}</h2>
 						<h2 className="text-md font-bold text-white opacity-[35%]">{selectedAlbum?.tracks?.items?.length} Tracks</h2>
 					</div>
@@ -466,8 +467,9 @@ export default function UserProfile() {
 			if (["album", "single"].includes(selectedArtistAlbums?.items?.[i]?.album_group)) {
 				item = (
 					<div className="flex flex-col text-center h-72 w-48 mr-28 relative">
-						<div className="h-8 mb-2">
+						<div className="h-12 mb-2">
 							<h2 className="text-xs w-48 truncate">{selectedArtistAlbums?.items?.[i]?.artists?.[0]?.name}</h2>
+							<h2 className="text-xs w-48 truncate">{selectedArtistAlbums?.items?.[i]?.artists?.[1]?.name}</h2>
 							<h2 className="text-sm font-semibold w-48 truncate" >{selectedArtistAlbums?.items?.[i]?.name}</h2>
 						</div>
 	
@@ -619,8 +621,9 @@ export default function UserProfile() {
 		  const row = albums.slice(i, i + albumsPerRow);
 		  const albumsRow = row.map((album, index) => (
 			<div className="flex flex-col text-center h-56 w-48 mr-28 relative mb-20">
-				<div className="h-8 mb-2">
+				<div className="h-12 mb-2">
 					<h2 className="text-xs w-48 truncate">{album?.artists?.[0]?.name}</h2>
+					<h2 className="text-xs w-48 truncate">{album?.artists?.[1]?.name}</h2>
 					<h2 className="text-sm font-semibold w-48 truncate">{album?.name}</h2>
 				</div>
 				<div className="group h-48 w-48 relative hover:bg-transparent hover:scale-[101%]">
