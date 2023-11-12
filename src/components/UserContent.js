@@ -1,28 +1,52 @@
 import { useSession} from "next-auth/react";
 import { useEffect, useState } from 'react';
+import { sql } from '@vercel/postgres';
+import { useRouter } from 'next/router';
 
 import useSpotify from 'hooks/useSpotify.js';
-//import useTopArtists from 'hooks/useTopArtists.js';
 
 const UserContent = () => {
+    const router = useRouter();
+    const user_id = router.query.user === undefined ? '' : (router.query.user).toString();
+    console.log("user_ID: " + user_id)
+
     const spotifyApi = useSpotify();
     const {data: session} = useSession();
-	const [myTopArtists, setMyTopArtists] = useState([])
-    const [myTopSongs, setmyTopSongs] = useState([])
+	const [myTopArtists, setMyTopArtists] = useState(null)
+    const [myTopSongs, setmyTopSongs] = useState(null)
 
-    spotifyApi.getMyTopTracks()
-    .then(
-        function(data) {
-            let topTracks = data.body.items;
-            console.log(topTracks);
-        }, 
-        function(err) {
-            console.log('Something went wrong!', err);
+    const fetchData = async () => {
+        try {
+        if(user_id === '' && myTopArtists === null & myTopSongs === null){
+          fetchTop();
+          const requestBody = {
+            user_email: session.user.email,
+            top_artists: myTopArtists,
+            top_songs: myTopSongs,
+          };
+          const response = await fetch(`/api/setStats`, {
+            method: 'POST', // Use the POST method to send data in the body
+            headers: {
+              'Content-Type': 'application/json', // Specify the content type as JSON
+            },
+            body: JSON.stringify(requestBody), // Convert the JavaScript object to JSON
+          });
+          const fetchedData = await response.json();
+          console.log(fetchedData);
         }
-    );
+        else if (user_id !== '' && myTopArtists === null && myTopSongs === null){
+            const response = await fetch(`/api/getStats?user_id=${user_id}`);
+            const fetchedData = await response.json();
+            console.log(fetchedData);
+        }
 
-    const fetchTop = () => {
-            spotifyApi.getMyTopArtists()
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+
+    const fetchTop = async () => {
+            await spotifyApi.getMyTopArtists()
             .then(
                 function(data) {
                     setMyTopArtists(data.body.items);
@@ -32,7 +56,7 @@ const UserContent = () => {
                 }
             );
 
-            spotifyApi.getMyTopTracks()
+            await spotifyApi.getMyTopTracks()
             .then(
                 function(data) {
                     setmyTopSongs(data.body.items);
@@ -95,7 +119,7 @@ const UserContent = () => {
 
     useEffect(() => {
         if (spotifyApi.getAccessToken()) {
-            fetchTop();
+            fetchData();
         }
     }, [spotifyApi, session]);
 
@@ -103,6 +127,7 @@ const UserContent = () => {
     return (
         <>  
             <div className='text-white w-full pb-64'>
+                HELLO BITCH {user_id} my email is {session?.user?.email} :D
                 {displayTopArtist(myTopArtists)}
                 {displayTopSongs(myTopSongs)}
             </div>
