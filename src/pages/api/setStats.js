@@ -1,66 +1,88 @@
 import { sql } from '@vercel/postgres';
 import { v4 } from "uuid";
 
-export default async function getStats(req, res) {
-    const user_email = req.body.user_email;
-    const top_artists = req.body.top_artists;
-    const top_songs = req.body.top_songs;
-    let message = "";
+export default async function setStats(req, res) {
+	const user_email = req.body.user_email;
+	const top_artists = req.body.top_artists;
+	const top_songs = req.body.top_songs;
+	
+	console.log("req body", user_email, top_artists, top_songs);
+	let message = undefined;
 
-  try {
-    const createUsersTable = await sql`CREATE TABLE IF NOT EXISTS USERS (USER_ID varchar(200), EMAIL varchar(320), SHARE_STATS varchar(1), PRIMARY KEY(USER_ID, EMAIL));`;
-    const createTopArtistsTable = await sql`CREATE TABLE IF NOT EXISTS USER_TOP_ARTISTS (USER_ID varchar(200), ARTIST_RANKING int, ARTIST_ID varchar(200), STATS_DATE DATE);`;
-    const createTopSongsTable = await sql`CREATE TABLE IF NOT EXISTS USER_TOP_SONGS (USER_ID varchar(200), SONG_RANKING int, SONG_ID varchar(200), STATS_DATE DATE);`;
-    //const remove = await sql`DELETE FROM USER_TOP_ARTISTS`;
-    //const removes = await sql`DELETE FROM USER_TOP_SONGS`;
-    //console.log(`Created tables`);
+	try {
+		// Delete Tables
+		// await sql`DROP TABLE USERS`;
+		// await sql`DROP TABLE USER_TOP_ARTISTS`;
+		// await sql`DROP TABLE USER_TOP_SONGS`;
 
-    const doesUserExist = await sql`SELECT USER_ID FROM USERS WHERE EMAIL = ${user_email}`;
+		// Create Users Table
+		await sql`CREATE TABLE IF NOT EXISTS USERS (USER_ID varchar(200), EMAIL varchar(320), SHARE_STATS varchar(1), LAST_UPDATE varchar(20), PRIMARY KEY(USER_ID, EMAIL));`;
+		// Create Top Artists Table
+		await sql`CREATE TABLE IF NOT EXISTS USER_TOP_ARTISTS (USER_ID varchar(200), ARTIST_RANKING int, ARTIST_ID varchar(200));`;
+		// Create Top Songs Table
+		await sql`CREATE TABLE IF NOT EXISTS USER_TOP_SONGS (USER_ID varchar(200), SONG_RANKING int, SONG_ID varchar(200));`;
 
-    //Create new ID for user if we aren't storing their account info
-    if(doesUserExist.rowCount < 1){
+		// Check If User Exists
+		const doesUserExist = await sql`SELECT USER_ID FROM USERS WHERE EMAIL = ${user_email}`;
 
-        //console.log(`user does not exist: ${doesUserExist.user_id}, making id`);
-        const newUserId = v4();
-        const insertNewUser = await sql`INSERT INTO USERS (USER_ID, EMAIL, SHARE_STATS) VALUES (${newUserId}, ${user_email}, 'N') `
-    }
+		// Create User In Table If Not
+		if (doesUserExist.rowCount < 1) {
+			const newUserId = v4();
+			const currentDate = getFormattedDate();
 
-    const user_id_query = await sql`SELECT USER_ID FROM USERS WHERE EMAIL = ${user_email}`;
-    const user_id = user_id_query.rows[0].user_id;
-    //console.log("User id for " + user_email + " is " + user_id)
+			await sql`INSERT INTO USERS (USER_ID, EMAIL, SHARE_STATS, LAST_UPDATE) VALUES (${newUserId}, ${user_email}, 'Y', ${currentDate})`
 
-    const currentDate = getFormattedDate();
+			// Insert Top Songs/Artists
+			for (let i = 0; i < 5; i++) {
+				await sql`INSERT INTO USER_TOP_SONGS (USER_ID, SONG_RANKING, SONG_ID) VALUES (${newUserId}, ${i}, ${top_songs?.[i]?.id})`;
+				await sql`INSERT INTO USER_TOP_ARTISTS (USER_ID, ARTIST_RANKING, ARTIST_ID) VALUES (${newUserId}, ${i}, ${top_artists?.[i]?.id})`;
+			}
 
-    const isArtistsUpToDate = await sql`SELECT COUNT(*) FROM USER_TOP_ARTISTS WHERE USER_ID = ${user_id} and STATS_DATE = ${currentDate}`
-    if(isArtistsUpToDate.rows[0].count === '0'){
-      for(let i = 0; i < 5; i++){
-        const insertTopArtists = await sql`INSERT INTO USER_TOP_ARTISTS (USER_ID, ARTIST_RANKING, ARTIST_ID, STATS_DATE) VALUES (${user_id}, ${i}, ${top_artists?.[i]?.id}, ${currentDate})`;
-      }
-    }
+			message = "Created User & Stats Up-to-date"
+		}
+		// Update Stats If Outdated
+		else {
+			const user_id_query = await sql`SELECT USER_ID FROM USERS WHERE EMAIL=${user_email}`;
+			const user_id = user_id_query.rows[0].user_id;
 
-    const isSongsUpToDate = await sql`SELECT COUNT(*) FROM USER_TOP_SONGS WHERE USER_ID = ${user_id} and STATS_DATE = ${currentDate}`
-    if(isSongsUpToDate.rows[0].count === '0'){
-      for(let i = 0; i < 5; i++){
-        const insertTopSongs = await sql`INSERT INTO USER_TOP_SONGS (USER_ID, SONG_RANKING, SONG_ID, STATS_DATE) VALUES (${user_id}, ${i}, ${top_songs?.[i]?.id}, ${currentDate})`;
-      }
-    }
+			const storedDate_query = await sql`SELECT LAST_UPDATE FROM USERS WHERE USER_ID = ${user_id}`;
+			const storedDate = storedDate_query.rows[0].last_update;
 
-    message = "Stats Saved";
-    } catch (error) {
-        message = "Error saving stats";
-        console.error(message, error);
-    }
+			if (storedDate !== getFormattedDate()) {
+				await sql`DELETE FROM USER_TOP_SONGS WHERE USER_ID=${user_id}`
+				await sql`DELETE FROM USER_TOP_ARTISTS WHERE USER_ID=${user_id}`
 
-  return res.status(200).json({message});
+				for (let i = 0; i < 5; i++) {
+					await sql`INSERT INTO USER_TOP_SONGS (USER_ID, SONG_RANKING, SONG_ID) VALUES (${user_id}, ${i}, ${top_songs?.[i]?.id})`;
+					await sql`INSERT INTO USER_TOP_ARTISTS (USER_ID, ARTIST_RANKING, ARTIST_ID) VALUES (${user_id}, ${i}, ${top_artists?.[i]?.id})`;
+				}
+
+				await sql`UPDATE USERS SET LAST_UPDATE=${getFormattedDate()} WHERE USER_ID=${user_id}`;
+				message = "User Exists & Stats Updated"
+			}
+			else {
+				message = "User Exists & Stats Already Up-to-date"
+			}
+		}
+	} 
+	catch (error) {
+		message = "Error saving stats";
+		console.error(message, error);
+	}
+
+	return res.status(200).json({message});
 }
 
 function getFormattedDate() {
-  const currentDate = new Date();
-  const options = { day: 'numeric', month: 'short', year: 'numeric' };
-  const dateParts = currentDate.toLocaleDateString('en-GB', options).split(' ');
-
-  // Rearrange parts into 'dd-mmm-yyyy' format
-  const formattedDate = `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
-
-  return formattedDate;
-}
+	const currentDate = new Date();
+	
+	// Get year, month, and day separately
+	const year = currentDate.getFullYear();
+	const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+	const day = String(currentDate.getDate()).padStart(2, '0');
+  
+	// Concatenate parts into 'yyyy-mm-dd' format
+	const formattedDate = `${year}-${month}-${day}`;
+  
+	return formattedDate;
+  }
