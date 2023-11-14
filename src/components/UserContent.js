@@ -9,71 +9,60 @@ const UserContent = () => {
     const user_id = router.query.user === undefined ? '' : (router.query.user).toString();
 
     const spotifyApi = useSpotify();
-    const {data: session} = useSession();   
+    const {data: session} = useSession();
 	const [myTopArtists, setMyTopArtists] = useState(null)
-    const [myTopSongs, setmyTopSongs] = useState(null)
+    const [myTopSongs, setMyTopSongs] = useState(null)
 
-    useEffect(() => {
-        if (spotifyApi.getAccessToken()) {
-            fetchTop();
-            fetchData();
-        }
-    }, [spotifyApi, session]);
 
-    const fetchData = async () => {
+    const fetchTop = async () => {
         try {
-            fetchTop();
-
-            if (user_id === '') {
-                const body = {
-                    user_email: session.user.email,
-                    top_artists: myTopArtists,
-                    top_songs: myTopSongs,
-                };
-
-                const response = await fetch(`/api/setStats`, {
-                    method: 'POST', // Use the POST method to send data in the body
-                    headers: {
-                        'Content-Type': 'application/json', // Specify the content type as JSON
-                    },
-                    body: JSON.stringify(body), // Convert the JavaScript object to JSON
-                });
-                const fetchedData = await response.json();
-                console.log(fetchedData);
-            }
-            else {
-                console.log(user_id)
-            }
-
-        } 
-        catch (error) {
-            console.error('Error fetching data:', error);
+          const topArtists = await spotifyApi.getMyTopArtists();
+          const topSongs = await spotifyApi.getMyTopTracks();
+          setMyTopArtists(topArtists.body.items);
+          setMyTopSongs(topSongs.body.items);
+        } catch (error) {
+          console.error('Error fetching top data:', error);
         }
-    };
+      };
+    
+      useEffect(() => {
+        if (spotifyApi.getAccessToken()) {
+          fetchTop(); // No need for then() here
+        }
+      }, [spotifyApi, session]);
+    
+      useEffect(() => {
+        // Use the state variables directly instead of passing them as arguments
+        const fetchData = async () => {
+          try {
+            // Ensure myTopArtists and myTopSongs are not null before making the API call
+            const body = {
+              user_email: session.user.email,
+              top_artists: myTopArtists || [],
+              top_songs: myTopSongs || [],
+            };
+    
+            const response = await fetch(`/api/setStats`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(body),
+            });
+    
+            const fetchedData = await response.json();
+            console.log(fetchedData);
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
+        };
+    
+        fetchData(); // Call fetchData directly here
+      }, [myTopArtists, myTopSongs, session]);
 
-    const fetchTop = () => {
-        spotifyApi.getMyTopArtists()
-        .then(
-            function(data) {
-                setMyTopArtists(data.body.items);
-            }, 
-            function(err) {
-                console.log('Something went wrong!', err);
-            }
-        );
-
-        spotifyApi.getMyTopTracks()
-        .then(
-            function(data) {
-                setmyTopSongs(data.body.items);
-            }, 
-            function(err) {
-                console.log('Something went wrong!', err);
-            }
-        );
-    }
-
+      
     const displayTopArtist = (myTopArtists) => {
+        
         const topArtists = [];
         for(let i = 0; i < 5; i++){
             topArtists.push(
@@ -96,6 +85,7 @@ const UserContent = () => {
     }
 
     const displayTopSongs = (myTopSongs) => {
+        
         const topSongs = [];
         for(let i = 0; i < 5; i++){
             topSongs.push(
@@ -110,7 +100,7 @@ const UserContent = () => {
                 </>
             )
         }
-        return (
+        return(
             <>
              <div className='mt-32 flex justify-between flex-col items-center'>
                     <h3 className="text-3xl font-bold pb-8">Top Songs</h3>
