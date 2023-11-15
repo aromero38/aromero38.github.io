@@ -9,8 +9,7 @@ import MusicPlayer from '@/components/MusicPlayer.js'
 import UserNavbar from '@/components/UserNavbar.js'
 import UserContent from '@/components/UserContent.js'
 import SearchContent from '@/components/SearchContent'
-
-
+import DiscoverContent from '@/components/DiscoverContent.js'
 
 export default function UserProfile({providers}) {
 	const {data: session} = useSession();
@@ -19,7 +18,6 @@ export default function UserProfile({providers}) {
 
 
     const currentlyDisplayedPage = () => {
-        
         if (currentPage == "UserContent") {
             return (
                 <>
@@ -45,6 +43,15 @@ export default function UserProfile({providers}) {
                 </>
             )
         }
+        else if (currentPage == "Discover") {
+            return (
+                <>
+                    <div className='bg-gradient-to-t from-green-400 to-black pb-80'>
+                        <DiscoverContent />
+                    </div>
+                </>
+            )
+        }
         
         return currentPage
     }
@@ -65,6 +72,7 @@ export default function UserProfile({providers}) {
                     <button className='text-white p-5 font-bold order-first' onClick={() => setCurrentPage("UserContent")}>TUNEFY</button>
                     <div className='text-white p-5 font-bold order-end'>
                         {/* <Link href="/search-page" className="pr-4">search</Link> */}
+                        <button className="pr-4" onClick={() => setCurrentPage("Discover")}>discover</button>
                         <button className="pr-4" onClick={() => setCurrentPage("Search")}>search</button>
                         {/* <button onClick={() => signOut({ callbackUrl: 'http://localhost:3000/' })}>sign out</button> */}
                         <button onClick={() => signOut({ callbackUrl: process.env.NEXTAUTH_URL })}>sign out</button>
