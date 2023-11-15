@@ -12,64 +12,61 @@ const UserContent = () => {
     const {data: session} = useSession();
 	  const [myTopArtists, setMyTopArtists] = useState(null)
     const [myTopSongs, setMyTopSongs] = useState(null)
-
-
-    // const fetchTop = async () => {
-    //     try {
-    //       const topArtists = await spotifyApi.getMyTopArtists();
-    //       const topSongs = await spotifyApi.getMyTopTracks();
-    //       setMyTopArtists(topArtists.body.items);
-    //       setMyTopSongs(topSongs.body.items);
-    //     } catch (error) {
-    //       console.error('Error fetching top data:', error);
-    //     }
-    //   };
     
-      // useEffect(() => {
-      //   if (spotifyApi.getAccessToken()) {
-      //     fetchTop(); // No need for then() here
-      //   }
-      // }, [spotifyApi, session]);
-    
-      useEffect(() => {
-        // Use the state variables directly instead of passing them as arguments
+    useEffect(() => {
+      if(user_id === ''){
         const fetchData = async () => {
-          try {
-
+        try {
             if(myTopArtists === null && myTopSongs === null){
-            const topArtists = await spotifyApi.getMyTopArtists();
-            const topSongs = await spotifyApi.getMyTopTracks();
-            setMyTopArtists(topArtists.body.items);
-            setMyTopSongs(topSongs.body.items);
+              const topArtists = await spotifyApi.getMyTopArtists();
+              const topSongs = await spotifyApi.getMyTopTracks();
+              setMyTopArtists(topArtists.body.items);
+              setMyTopSongs(topSongs.body.items);
 
-            // Ensure myTopArtists and myTopSongs are not null before making the API call
-            const body = {
-              user_email: session.user.email,
-              top_artists: topArtists.body.items,
-              top_songs: topSongs.body.items,
-            };
-    
-            const response = await fetch(`/api/setStats`, {
-              method: 'POST',
-              headers: {
+              const body = {
+                user_email: session.user.email,
+                top_artists: topArtists.body.items,
+                top_songs: topSongs.body.items,
+              };
+
+              const response = await fetch(`/api/setStats`, {
+                method: 'POST',
+                headers: {
                 'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(body),
-            });
-    
-            const fetchedData = await response.json();
-            console.log(fetchedData);
-          }
+                },
+                body: JSON.stringify(body),
+              });
+
+              const fetchedData = await response.json();
+              console.log(fetchedData);
+            }
           } catch (error) {
             console.error('Error fetching data:', error);
           }
         };
-    
+
         if (spotifyApi.getAccessToken()) {
-          fetchData(); // No need for then() here
+          fetchData();
         }
-        //fetchData(); // Call fetchData directly here
-      }, [myTopArtists, myTopSongs, session]);
+      }
+      else{
+        const fetchData = async () => {
+          try {
+              if(myTopArtists === null && myTopSongs === null){
+                const response = await fetch(`/api/getStats?user_id=${user_id}`);
+                const fetchedData = await response.json();
+                console.log(fetchedData);
+              }
+            } catch (error) {
+              console.error('Error fetching data:', error);
+            }
+          };
+  
+          if (spotifyApi.getAccessToken()) {
+            fetchData();
+          }
+      }
+    }, [myTopArtists, myTopSongs, session]);
 
       
     const displayTopArtist = (myTopArtists) => {
