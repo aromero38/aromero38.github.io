@@ -7,11 +7,13 @@ export default async function getStats(req, res) {
     const top_songs = req.body.top_songs;
     let message = "";
 
-    console.log(top_artists)
-
 		// await sql`DROP TABLE USERS`;
 		// await sql`DROP TABLE USER_TOP_ARTISTS`;
 		// await sql`DROP TABLE USER_TOP_SONGS`;
+
+    // await sql`DELETE FROM USERS`;
+		// await sql`DELETE FROM USER_TOP_ARTISTS`;
+		// await sql`DELETE FROM USER_TOP_SONGS`;
 
   try {
     const createUsersTable = await sql`CREATE TABLE IF NOT EXISTS USERS (USER_ID varchar(200), EMAIL varchar(320), SHARE_STATS varchar(1), PRIMARY KEY(USER_ID, EMAIL));`;
@@ -38,7 +40,6 @@ export default async function getStats(req, res) {
     const isArtistsUpToDate = await sql`SELECT COUNT(*) FROM USER_TOP_ARTISTS WHERE USER_ID = ${user_id} and STATS_DATE = ${currentDate}`
     if(isArtistsUpToDate.rows[0].count === '0'){
       for(let i = 0; i < 5; i++){
-        console.log(top_artists?.[i])
         const insertTopArtists = await sql`INSERT INTO USER_TOP_ARTISTS (USER_ID, ARTIST_RANKING, ARTIST_INFO, STATS_DATE) VALUES (${user_id}, ${i}, ${top_artists?.[i]}, ${currentDate})`;
       }
     }

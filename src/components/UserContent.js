@@ -12,9 +12,10 @@ const UserContent = () => {
     const {data: session} = useSession();
 	  const [myTopArtists, setMyTopArtists] = useState(null)
     const [myTopSongs, setMyTopSongs] = useState(null)
+    const [displayedTopArtists, setDisplayedTopArtists] = useState(null);
+    const [displayedTopSongs, setDisplayedTopSongs] = useState(null);
     
     useEffect(() => {
-      if(user_id === ''){
         const fetchData = async () => {
         try {
             if(myTopArtists === null && myTopSongs === null){
@@ -29,7 +30,7 @@ const UserContent = () => {
                 top_songs: topSongs.body.items,
               };
 
-              const response = await fetch(`/api/setStats`, {
+              const setStats = await fetch(`/api/setStats`, {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
@@ -37,9 +38,16 @@ const UserContent = () => {
                 body: JSON.stringify(body),
               });
 
-              const fetchedData = await response.json();
-              console.log(fetchedData);
+              const setStatsResponse = await setStats.json();
+              console.log(setStatsResponse);
+
+              const getStats = await fetch(`/api/getStats?user_id=${user_id}&user_email=${session.user.email}`);
+              const getStatsResponse = await getStats.json();
+              setDisplayedTopArtists(getStatsResponse.topArtists);
+              setDisplayedTopSongs(getStatsResponse.topSongs);
+
             }
+            
           } catch (error) {
             console.error('Error fetching data:', error);
           }
@@ -48,36 +56,20 @@ const UserContent = () => {
         if (spotifyApi.getAccessToken()) {
           fetchData();
         }
-      }
-      else{
-        const fetchData = async () => {
-          try {
-              if(myTopArtists === null && myTopSongs === null){
-                const response = await fetch(`/api/getStats?user_id=${user_id}`);
-                const fetchedData = await response.json();
-                console.log(fetchedData);
-              }
-            } catch (error) {
-              console.error('Error fetching data:', error);
-            }
-          };
-  
-          if (spotifyApi.getAccessToken()) {
-            fetchData();
-          }
-      }
+
+          
     }, [myTopArtists, myTopSongs, session]);
 
       
-    const displayTopArtist = (myTopArtists) => {
+    const displayTopArtist = (displayedTopArtists) => {
         
         const topArtists = [];
         for(let i = 0; i < 5; i++){
             topArtists.push(
                 <>
                     <div className="flex flex-row place-items-center justify-start pb-8 w-1/4 ml-8">
-                        <img src={myTopArtists?.[i]?.images?.[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
-                        <a href={myTopArtists?.[i]?.external_urls?.spotify} target="_blank"><h2 className="text-2xl font-semibold">{myTopArtists?.[i]?.name}</h2></a>
+                        <img src={displayedTopArtists?.[i]?.artist_info?.images?.[0]?.url} className="h-32 w-32 rounded-full mr-8"></img>
+                        <a href={displayedTopArtists?.[i]?.artist_info?.external_urls?.spotify} target="_blank"><h2 className="text-2xl font-semibold">{displayedTopArtists?.[i]?.artist_info?.name}</h2></a>
                     </div>
                 </>
             )
@@ -92,17 +84,17 @@ const UserContent = () => {
         )
     }
 
-    const displayTopSongs = (myTopSongs) => {
+    const displayTopSongs = (displayedTopSongs) => {
         
         const topSongs = [];
         for(let i = 0; i < 5; i++){
             topSongs.push(
                 <>
                     <div className="flex flex-row place-items-center justify-start pb-8 w-1/4 ml-8">
-                        <img src={myTopSongs?.[i]?.album?.images?.[1].url} className="h-32 w-32 rounded-lg mr-8"></img>
+                        <img src={displayedTopSongs?.[i]?.song_info?.album?.images?.[1].url} className="h-32 w-32 rounded-lg mr-8"></img>
                         <div>
-                            <a href={myTopSongs?.[i]?.external_urls?.spotify} target="_blank"><h2 className="text-2xl font-semibold"> {myTopSongs?.[i]?.name}</h2></a>
-                            <h2 className="text-xl">{myTopSongs?.[i]?.artists?.[0]?.name}</h2>
+                            <a href={displayedTopSongs?.[i]?.song_info?.external_urls?.spotify} target="_blank"><h2 className="text-2xl font-semibold"> {displayedTopSongs?.[i]?.song_info?.name}</h2></a>
+                            <h2 className="text-xl">{displayedTopSongs?.[i]?.song_info?.artists?.[0]?.name}</h2>
                         </div>
                     </div>
                 </>
@@ -121,9 +113,8 @@ const UserContent = () => {
     return (
         <>  
             <div className='text-white w-full pb-64'>
-                HELLO BITCH {user_id} my email is {session?.user?.email} :D
-                {displayTopArtist(myTopArtists)}
-                {displayTopSongs(myTopSongs)}
+                {displayTopArtist(displayedTopArtists)}
+                {displayTopSongs(displayedTopSongs)}
             </div>
         </>
     )
