@@ -7,16 +7,16 @@ export default async function getStats(req, res) {
     const top_songs = req.body.top_songs;
     let message = "";
 
-  try {
-			// Delete Tables
+    console.log(top_artists)
+
 		// await sql`DROP TABLE USERS`;
 		// await sql`DROP TABLE USER_TOP_ARTISTS`;
 		// await sql`DROP TABLE USER_TOP_SONGS`;
+
+  try {
     const createUsersTable = await sql`CREATE TABLE IF NOT EXISTS USERS (USER_ID varchar(200), EMAIL varchar(320), SHARE_STATS varchar(1), PRIMARY KEY(USER_ID, EMAIL));`;
     const createTopArtistsTable = await sql`CREATE TABLE IF NOT EXISTS USER_TOP_ARTISTS (USER_ID varchar(200), ARTIST_RANKING int, ARTIST_ID varchar(200), STATS_DATE DATE);`;
     const createTopSongsTable = await sql`CREATE TABLE IF NOT EXISTS USER_TOP_SONGS (USER_ID varchar(200), SONG_RANKING int, SONG_ID varchar(200), STATS_DATE DATE);`;
-    //const remove = await sql`DELETE FROM USER_TOP_ARTISTS`;
-    //const removes = await sql`DELETE FROM USER_TOP_SONGS`;
     //console.log(`Created tables`);
 
     const doesUserExist = await sql`SELECT USER_ID FROM USERS WHERE EMAIL = ${user_email}`;
@@ -38,7 +38,8 @@ export default async function getStats(req, res) {
     const isArtistsUpToDate = await sql`SELECT COUNT(*) FROM USER_TOP_ARTISTS WHERE USER_ID = ${user_id} and STATS_DATE = ${currentDate}`
     if(isArtistsUpToDate.rows[0].count === '0'){
       for(let i = 0; i < 5; i++){
-        const insertTopArtists = await sql`INSERT INTO USER_TOP_ARTISTS (USER_ID, ARTIST_RANKING, ARTIST_ID, STATS_DATE) VALUES (${user_id}, ${i}, ${top_artists?.[i]?.id}, ${currentDate})`;
+        console.log(top_artists?.[i].id)
+        const insertTopArtists = await sql`INSERT INTO USER_TOP_ARTISTS (USER_ID, ARTIST_RANKING, ARTIST_ID, STATS_DATE) VALUES (${user_id}, ${i}, ${top_artists?.[i].id}, ${currentDate})`;
       }
     }
 
